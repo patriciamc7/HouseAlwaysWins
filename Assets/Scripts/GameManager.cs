@@ -5,7 +5,7 @@ using System.Text;
 public enum DayResult
 {
     None,
-    Win,
+    ExactWin,
     Bust,
     Stand,
     Escape
@@ -36,9 +36,10 @@ public class GameManager : MonoBehaviour
 
     DayResult lastDayResult = DayResult.None;
 
-    //Stress
-    StressSytem stressSystem;
+    #region Stress
+    public StressSytem stressSystem;
     public Slider stressSlider;
+    #endregion
 
     #region Wilds
     public int remainingWilds = 3;
@@ -61,6 +62,12 @@ public class GameManager : MonoBehaviour
     DeckBias currentPlayerBias = DeckBias.None;
     #endregion
 
+    #region NPC
+    public BankNPC bankNPC;
+    public Image bankCardImage;
+    public Text bankHandTotal;
+    #endregion
+
     // Start is called before the first frame update
     void Start()
     {
@@ -72,6 +79,8 @@ public class GameManager : MonoBehaviour
 
         deck = new SpanishDeck();
         hand = new PlayerHand();
+
+        bankNPC = new BankNPC();
 
         NewGame();
     }
@@ -87,10 +96,13 @@ public class GameManager : MonoBehaviour
         deck.CreateDeck();
         deck.Suffle();
         hand.Clear();
+        bankNPC.Clear();
 
         lastDayResult = DayResult.None;
         roundFinished = false;
         resultText.text = "";
+
+        DrawBank();
 
         deck.SetBias(currentPlayerBias);
         DrawCard();
@@ -100,6 +112,22 @@ public class GameManager : MonoBehaviour
         RefreshWildsByStress();
 
         ResetWilds();
+    }
+
+    public void DrawBank()
+    {
+        if (roundFinished) return;
+
+        var card = deck.Draw();
+        if (card != null)
+            bankNPC.Add(card);
+
+        StringBuilder sb = new StringBuilder();
+
+        foreach (var c in bankNPC.cards)
+            sb.AppendLine(c.ToString());
+
+        bankHandTotal.text = sb.ToString();
     }
 
     /// <summary>
@@ -115,6 +143,13 @@ public class GameManager : MonoBehaviour
 
         CheckResult();
         stressSystem.ProcessCardResult(hand.cards.Count, hand.GetTotal());
+
+        if (stressSystem.IsCollapsed()) //TOD NO MIRAR AQUI 
+        {
+            resultText.text = "Mental collapse";
+            return;
+        }
+
         RefreshUI();
     }
 
@@ -148,7 +183,7 @@ public class GameManager : MonoBehaviour
         if (total == winPoints)
         {
             resultText.text = "WIN";
-            EndRound(DayResult.Win);
+            EndRound(DayResult.ExactWin);
         }
         else if (total > winPoints)
         {
@@ -165,21 +200,24 @@ public class GameManager : MonoBehaviour
     {
         if (roundFinished) return;
 
-        ResolveStand();
-        EndRound(DayResult.Stand);
+        DayResult result = ResolveStand();
+        EndRound(result);
     }
 
-    void ResolveStand()
+    DayResult ResolveStand()
     {
         float total = hand.GetTotal();
+        float totalBank = bankNPC.GetTotal();
 
-        if (total <= winPoints)
+        if (total <= totalBank)
         {
-            resultText.text = "Stand with " + total;
+            resultText.text = "Lose with " + total;
+            return DayResult.Bust;
         }
         else
         {
-            resultText.text = "Lose with " + total;
+            resultText.text = "Win with " + total;
+            return DayResult.Stand;
         }
     }
 
@@ -187,7 +225,7 @@ public class GameManager : MonoBehaviour
     {
         lastDayResult = result;
         roundFinished = true;
-        waitingNextDay = result == DayResult.Win;
+        waitingNextDay = result == DayResult.ExactWin || result == DayResult.Stand;
     }
 
     public void NextDay()
@@ -214,8 +252,10 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        waitingNextDay = false;
+        OpenShop();
 
+        //TODO ESTO CUANDO SE CIERRE LA TIENDA
+        waitingNextDay = false;
         NewGame();
     }
 
@@ -240,6 +280,13 @@ public class GameManager : MonoBehaviour
     {
         remainingWilds--;
         stressSystem.ProcessWilds(remainingWilds);
+
+        if (stressSystem.IsCollapsed())
+        {
+            resultText.text = "Mental collapse";
+            return;
+        }
+
         RefreshStressUI();
     }
 
@@ -306,6 +353,7 @@ public class GameManager : MonoBehaviour
 
         RefreshUI();
         OnWildPress();
+        OnWildPress();
     }
 
     void ApplyDayReward()
@@ -314,14 +362,12 @@ public class GameManager : MonoBehaviour
 
         switch (lastDayResult)
         {
-            case DayResult.Win:
+            case DayResult.ExactWin:
                 reward = 10;
                 break;
-
             case DayResult.Stand:
                 reward = 5;
                 break;
-
             case DayResult.Bust:
             case DayResult.Escape:
                 reward = 0;
@@ -358,9 +404,16 @@ public class GameManager : MonoBehaviour
             }
             Debug.Log("La casa ha cambiado las probabilidades: " + currentPlayerBias);
         }
-        else
+        else //TODO PONER EL QUE QUIERA EL JUGADOR
         {
             currentPlayerBias = DeckBias.None;
         }
+    }
+
+    void OpenShop()
+    {
+        //TODO
+        //shopUI.SetActive(true);
+        //RefreshShopItems();
     }
 }

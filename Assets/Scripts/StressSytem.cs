@@ -49,7 +49,7 @@ public class StressSytem
             case DayResult.Stand:
                 stressToAdd = 10f;
                 break;
-            case DayResult.Win:
+            case DayResult.ExactWin:
                 stressToAdd = 0f;
                 break;
         }
@@ -58,8 +58,6 @@ public class StressSytem
         {
             stressToAdd += (day - 2) * 3;
         }
-
-        //TODO añadir si te quedan pocos comodines
 
         currentStress += stressToAdd;
 
