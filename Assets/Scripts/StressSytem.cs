@@ -62,7 +62,6 @@ public class StressSytem
         currentStress += stressToAdd;
 
         currentStress = Mathf.Clamp(currentStress, 0f, maxStress);
-        Debug.Log("Stress System -> day " + day + " result: " + result);
     }
 
     public bool IsCollapsed()

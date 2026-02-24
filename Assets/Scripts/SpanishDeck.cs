@@ -5,8 +5,8 @@ public enum DeckBias
 {
     None,
     MoreFigures,
-    MoreHighNumbers,
-    MoreLowNumbers
+    HigherNumbers,
+    LowerNumbers
 }
 public class SpanishDeck
 {
@@ -91,11 +91,11 @@ public class SpanishDeck
                     if (v >= 10)
                         weight = 4;
                     break;
-                case DeckBias.MoreHighNumbers:
+                case DeckBias.HigherNumbers:
                     if (v >= 5 && v<= 7)
                         weight = 4;
                     break;
-                case DeckBias.MoreLowNumbers:
+                case DeckBias.LowerNumbers:
                     if (v >= 1 && v<= 3)
                         weight = 4;
                     break;

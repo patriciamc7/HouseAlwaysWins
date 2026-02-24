@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Text;
+using System.Text.RegularExpressions;
 
 public enum DayResult
 {
@@ -15,12 +16,17 @@ public class GameManager : MonoBehaviour
 {
     const float winPoints = 7.5f;
 
-    //UI
+    #region UI
     public Text handText;
     public Text totalText;
     public Text resultText;
     public Text dayText;
     public Text coinsText;
+    public Text currentBiasText;
+
+    public Button drawButton;
+    public Button standButton;
+    #endregion
 
     SpanishDeck deck;
     PlayerHand hand;
@@ -59,6 +65,7 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region Probability
+    public GameObject biasUI;
     DeckBias currentPlayerBias = DeckBias.None;
     #endregion
 
@@ -66,6 +73,10 @@ public class GameManager : MonoBehaviour
     public BankNPC bankNPC;
     public Image bankCardImage;
     public Text bankHandTotal;
+    #endregion
+
+    #region Shop
+    public GameObject shopUI;
     #endregion
 
     // Start is called before the first frame update
@@ -83,6 +94,7 @@ public class GameManager : MonoBehaviour
         bankNPC = new BankNPC();
 
         NewGame();
+        ResetWilds();
     }
 
     /// <summary>
@@ -108,10 +120,9 @@ public class GameManager : MonoBehaviour
         DrawCard();
 
         RefreshUI();
+        BlockButtons(true);
 
         RefreshWildsByStress();
-
-        ResetWilds();
     }
 
     public void DrawBank()
@@ -144,7 +155,7 @@ public class GameManager : MonoBehaviour
         CheckResult();
         stressSystem.ProcessCardResult(hand.cards.Count, hand.GetTotal());
 
-        if (stressSystem.IsCollapsed()) //TOD NO MIRAR AQUI 
+        if (stressSystem.IsCollapsed())
         {
             resultText.text = "Mental collapse";
             return;
@@ -167,6 +178,7 @@ public class GameManager : MonoBehaviour
         totalText.text = "Total: " + hand.GetTotal();
         dayText.text = currentDay + " / " + maxDays;
         coinsText.text = "Coins: " + coins;
+        currentBiasText.text = "Current bias: " + currentPlayerBias.ToReadable();
 
         RefreshStressUI();
     }
@@ -182,18 +194,27 @@ public class GameManager : MonoBehaviour
 
         if (total == winPoints)
         {
+            BlockButtons(false);
             resultText.text = "WIN";
             EndRound(DayResult.ExactWin);
         }
         else if (total > winPoints)
         {
+            BlockButtons(false);
             resultText.text = "Lose with " + total + " points";
             EndRound(DayResult.Bust);
+            //TODo GAMEOVER
         }
         else
         {
             resultText.text = "";
         }
+    }
+
+    void BlockButtons(bool interactable)
+    {
+        standButton.interactable = interactable;
+        drawButton.interactable = interactable;
     }
 
     public void Stand()
@@ -212,6 +233,7 @@ public class GameManager : MonoBehaviour
         if (total <= totalBank)
         {
             resultText.text = "Lose with " + total;
+            coins = 0;
             return DayResult.Bust;
         }
         else
@@ -226,13 +248,16 @@ public class GameManager : MonoBehaviour
         lastDayResult = result;
         roundFinished = true;
         waitingNextDay = result == DayResult.ExactWin || result == DayResult.Stand;
+
+        if (waitingNextDay)
+            OpenShop();
     }
 
     public void NextDay()
     {
-        if (!waitingNextDay) return;
+        shopUI.SetActive(false);
 
-        UpdateHouseBias();
+        if (!waitingNextDay) return;
 
         stressSystem.ProcessDayResult(lastDayResult, currentDay);
         ApplyDayReward();
@@ -252,11 +277,9 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        OpenShop();
-
-        //TODO ESTO CUANDO SE CIERRE LA TIENDA
         waitingNextDay = false;
         NewGame();
+
     }
 
     void RefreshStressUI()
@@ -293,18 +316,23 @@ public class GameManager : MonoBehaviour
     public void UseDimeWild()
     {
         dimeWildButton.interactable = false;
+        roundFinished = true;
 
-        if (roundFinished) return;
+        standButton.interactable = false;
+        drawButton.interactable = false;
 
-        if (remainingWilds <= 0) return;
+        if (remainingWilds <= 0)
+            return;
 
         if (dimeSystem.isWin())
         {
             coins /= 2;
             EndRound(DayResult.Escape);
-            RefreshWildsByStress();
+            NewGame();//TODO GO BACK TO MENU
         }
 
+        RefreshWildsByStress();
+        RefreshUI();
         OnWildPress();
     }
 
@@ -393,27 +421,50 @@ public class GameManager : MonoBehaviour
             switch (r)
             {
                 case 0:
-                    currentPlayerBias = DeckBias.MoreHighNumbers;
+                    currentPlayerBias = DeckBias.HigherNumbers;
                     break;
                 case 1:
                     currentPlayerBias = DeckBias.MoreFigures;
                     break;
                 case 2:
-                    currentPlayerBias = DeckBias.MoreLowNumbers;
+                    currentPlayerBias = DeckBias.LowerNumbers;
                     break;
             }
-            Debug.Log("La casa ha cambiado las probabilidades: " + currentPlayerBias);
         }
-        else //TODO PONER EL QUE QUIERA EL JUGADOR
+        else
         {
-            currentPlayerBias = DeckBias.None;
+            biasUI.SetActive(true);
         }
+    }
+
+    public void PlayerChangeHouseBias(string bias)
+    {
+        if (System.Enum.TryParse<DeckBias>(bias, out currentPlayerBias))
+            NextDay();
+
+        biasUI.SetActive(false);
     }
 
     void OpenShop()
     {
+        shopUI.SetActive(true);
+
         //TODO
-        //shopUI.SetActive(true);
         //RefreshShopItems();
+    }
+
+    public void OnShopClosed()
+    {
+        shopUI.SetActive(false);
+        UpdateHouseBias();
+    }
+
+
+}
+public static class EnumExtensions
+{
+    public static string ToReadable(this System.Enum value)
+    {
+        return Regex.Replace(value.ToString(), "(\\B[A-Z])", " $1");
     }
 }
