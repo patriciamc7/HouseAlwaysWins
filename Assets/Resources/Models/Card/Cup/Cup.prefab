@@ -82,7 +82,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 47b8ea977a5febd4682e56f949c7f46e, type: 2}
+      objectReference: {fileID: 2100000, guid: 11dd2fe2887295b458b4186faa887148, type: 2}
     - target: {fileID: -227948702179264823, guid: 433e7cc6a77ff974fbc5f54941ba573e,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -93,6 +93,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cup
       objectReference: {fileID: 0}
+    - target: {fileID: 4321514657177891973, guid: 433e7cc6a77ff974fbc5f54941ba573e,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 47b8ea977a5febd4682e56f949c7f46e, type: 2}
     - target: {fileID: 6745302439343835087, guid: 433e7cc6a77ff974fbc5f54941ba573e,
         type: 3}
       propertyPath: m_Materials.Array.data[0]

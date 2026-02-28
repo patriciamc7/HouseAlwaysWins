@@ -83,6 +83,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: a279f5785936f9c4bb7b95652ffb9539, type: 2}
+    - target: {fileID: 327064008815436722, guid: ed3eac06a76375b4d8728353e1c72fa1,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 18d17bf808039f84cb4d122c90566c51, type: 2}
     - target: {fileID: 882129737928793925, guid: ed3eac06a76375b4d8728353e1c72fa1,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -93,6 +98,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Club
       objectReference: {fileID: 0}
+    - target: {fileID: 2355982399387309400, guid: ed3eac06a76375b4d8728353e1c72fa1,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 11dd2fe2887295b458b4186faa887148, type: 2}
     - target: {fileID: 2786534777698132407, guid: ed3eac06a76375b4d8728353e1c72fa1,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
