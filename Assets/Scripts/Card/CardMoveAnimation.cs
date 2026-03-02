@@ -5,12 +5,12 @@ public class CardMoveAnimation : MonoBehaviour
 {
     public float moveTime = 0.25f;
 
-    public void MoveTo (Vector3 targetPosition, Quaternion targetRotation, Transform newParent)
+    public void MoveToPosition(Vector3 targetPosition, Quaternion targetRotation, Transform newParent, System.Action onComplete)
     {
-        StartCoroutine(MoveRoutine(targetPosition, targetRotation, newParent));
+        StartCoroutine(MoveRoutine(targetPosition, targetRotation, newParent, onComplete));
     }
 
-    IEnumerator MoveRoutine (Vector3 targetPosition, Quaternion targetRotation, Transform newParent)
+    IEnumerator MoveRoutine(Vector3 targetPosition, Quaternion targetRotation, Transform newParent, System.Action onComplete)
     {
         Vector3 startPos = transform.position;
         Quaternion startRot = transform.rotation;
@@ -31,9 +31,11 @@ public class CardMoveAnimation : MonoBehaviour
         transform.rotation = targetRotation;
 
         transform.SetParent(newParent);
+
+        onComplete?.Invoke();
     }
 
-    public void FlipTo(Quaternion targetRotation, float time = 0.2f, float lift = 0.03f)
+    public void FlipTo(Quaternion targetRotation, float time = 0.25f, float lift = 1f)
     {
         StartCoroutine(FlipRoutine(targetRotation, time, lift));
     }
@@ -43,8 +45,11 @@ public class CardMoveAnimation : MonoBehaviour
         Quaternion startRot = transform.rotation;
         Vector3 startPos = transform.position;
 
-        Vector3 upPos = startPos + transform.up * lift;
+        Vector3 liftDir = transform.parent != null
+        ? transform.parent.up
+        : transform.up;
 
+        Vector3 upPos = startPos + liftDir * lift;
         float t = 0f;
 
         while (t < 1f)

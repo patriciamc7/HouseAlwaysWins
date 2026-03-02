@@ -28,9 +28,6 @@ public class GameManager : MonoBehaviour
     public Button standButton;
     #endregion
 
-    SpanishDeck deck;
-    PlayerHand hand;
-
     public int coins = 0;
 
     bool roundFinished = false;
@@ -41,6 +38,8 @@ public class GameManager : MonoBehaviour
     bool waitingNextDay = false;
 
     DayResult lastDayResult = DayResult.None;
+
+    CardDealer dealer;
 
     #region Stress
     public StressSytem stressSystem;
@@ -88,9 +87,6 @@ public class GameManager : MonoBehaviour
         slotSystem = new SlotGame();
         dimeSystem = new DimeGame();
 
-        deck = new SpanishDeck();
-        hand = new PlayerHand();
-
         bankNPC = new BankNPC();
 
         NewGame();
@@ -105,9 +101,8 @@ public class GameManager : MonoBehaviour
         if (currentDay == 1)
             stressSystem.Reset();
 
-        deck.CreateDeck();
-        deck.Suffle();
-        hand.Clear();
+        dealer.StartRun(currentPlayerBias);
+
         bankNPC.Clear();
 
         lastDayResult = DayResult.None;
@@ -116,7 +111,6 @@ public class GameManager : MonoBehaviour
 
         DrawBank();
 
-        deck.SetBias(currentPlayerBias);
         DrawCard();
 
         RefreshUI();
@@ -125,20 +119,20 @@ public class GameManager : MonoBehaviour
         RefreshWildsByStress();
     }
 
-    public void DrawBank()
+    public void DrawBank() //TODO
     {
-        if (roundFinished) return;
+        //if (roundFinished) return;
 
-        var card = deck.Draw();
-        if (card != null)
-            bankNPC.Add(card);
+        //var card = deck.Draw();
+        //if (card != null)
+        //    bankNPC.Add(card);
 
-        StringBuilder sb = new StringBuilder();
+        //StringBuilder sb = new StringBuilder();
 
-        foreach (var c in bankNPC.cards)
-            sb.AppendLine(c.ToString());
+        //foreach (var c in bankNPC.cards)
+        //    sb.AppendLine(c.ToString());
 
-        bankHandTotal.text = sb.ToString();
+        //bankHandTotal.text = sb.ToString();
     }
 
     /// <summary>
@@ -148,12 +142,10 @@ public class GameManager : MonoBehaviour
     {
         if (roundFinished) return;
 
-        var card = deck.Draw();
-        if (card != null)
-            hand.Add(card);
+        //Draw card dealer;
 
         CheckResult();
-        stressSystem.ProcessCardResult(hand.cards.Count, hand.GetTotal());
+        stressSystem.ProcessCardResult(dealer.hand.cards.Count, dealer.hand.GetTotal());
 
         if (stressSystem.IsCollapsed())
         {
@@ -171,11 +163,11 @@ public class GameManager : MonoBehaviour
     {
         StringBuilder sb = new StringBuilder();
 
-        foreach (var c in hand.cards)
+        foreach (var c in dealer.hand.cards)
             sb.AppendLine(c.ToString());
 
         handText.text = sb.ToString();
-        totalText.text = "Total: " + hand.GetTotal();
+        totalText.text = "Total: " + dealer.hand.GetTotal();
         dayText.text = currentDay + " / " + maxDays;
         coinsText.text = "Coins: " + coins;
         currentBiasText.text = "Current bias: " + currentPlayerBias.ToReadable();
@@ -190,7 +182,7 @@ public class GameManager : MonoBehaviour
     {
         if (roundFinished) return;
 
-        float total = hand.GetTotal();
+        float total = dealer.hand.GetTotal();
 
         if (total == winPoints)
         {
@@ -227,7 +219,7 @@ public class GameManager : MonoBehaviour
 
     DayResult ResolveStand()
     {
-        float total = hand.GetTotal();
+        float total = dealer.hand.GetTotal();
         float totalBank = bankNPC.GetTotal();
 
         if (total <= totalBank)
@@ -344,17 +336,18 @@ public class GameManager : MonoBehaviour
 
         if (remainingWilds <= 0) return;
 
-        if (hand.cards.Count == 0) return;
+        if (dealer.hand.cards.Count == 0) return;
 
         if (slotSystem.isWin())
         {
-            var newCard = deck.Draw();
-            if (newCard == null) return;
+            //TODO
+            //var newCard = deck.Draw();
+            //if (newCard == null) return;
 
             //TODO CLICK
-            int index = Random.Range(0, hand.cards.Count);
+            //int index = Random.Range(0, dealer.hand.cards.Count);
 
-            hand.cards[index] = newCard;
+            //dealer.hand.cards[index] = newCard;
         }
 
         RefreshUI();

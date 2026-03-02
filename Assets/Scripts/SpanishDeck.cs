@@ -8,12 +8,19 @@ public enum DeckBias
     HigherNumbers,
     LowerNumbers
 }
+
+public enum Suit
+{
+    Clubs,
+    Coin,
+    Cup,
+    Sword
+}
+
 public class SpanishDeck
 {
     const int totalCards = 10;
     private List<SpanishCard> cards = new List<SpanishCard>();
-
-    private string[] suits = { "Oros", "Espadas", "Bastones", "Copas" }; //todo cambiar idioma
 
     DeckBias currentBias = DeckBias.None;
 
@@ -24,7 +31,7 @@ public class SpanishDeck
     {
         cards.Clear();
 
-        foreach (var suit in suits)
+        foreach (Suit suit in System.Enum.GetValues(typeof(Suit)))
         {
             for (int i = 1; i <= totalCards; i++)
             {

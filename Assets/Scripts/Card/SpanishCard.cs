@@ -1,10 +1,9 @@
 using System;
-using UnityEngine;
 
 [Serializable]
 public class SpanishCard
 {
-    public string suit;
+    public Suit suit;
     public int value;
 
     /// <summary>
@@ -25,6 +24,6 @@ public class SpanishCard
     /// <returns></returns>
     public  override string ToString()
     {
-        return value + " de " + suit; //todo cambiar por idioma
+        return value + " de " + suit.ToString(); //todo cambiar por idioma
     }
 }

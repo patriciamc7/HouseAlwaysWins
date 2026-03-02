@@ -48,7 +48,16 @@ public class CardDrawTest : MonoBehaviour
             Vector3 targetPos = handRoot.position + (handRoot.right * distanceBetweenCards * offset) + (handRoot.forward * 0.002f * i);
             Quaternion targetRot = cardsInHand[i].transform.rotation; // handRoot.rotation;
 
-            cardsInHand[i].GetComponent<CardMoveAnimation>().MoveTo(targetPos, targetRot, handRoot);
+            var anim = cardsInHand[i].GetComponent<CardMoveAnimation>();
+            
+            if (i == total - 1)
+            {
+                anim.MoveToPosition(targetPos, targetRot, handRoot, () =>
+                {
+                    Quaternion rotation = Quaternion.Euler(0f, 180f, 0f) * handRoot.rotation;
+                    anim.FlipTo(rotation);
+                });
+            }
         }
     }
 }
