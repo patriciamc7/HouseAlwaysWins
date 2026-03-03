@@ -20,41 +20,42 @@ public class GameManager : MonoBehaviour
     const float winPoints = 7.5f;
 
     #region UI
-    public Text handText;
-    public Text totalText;
-    public Text resultText;
-    public Text dayText;
-    public Text coinsText;
-    public Text currentBiasText;
+    [SerializeField] Text handText;
+    [SerializeField] Text totalText;
+    [SerializeField] Text resultText;
+    [SerializeField] Text dayText;
+    [SerializeField] Text coinsText;
+    [SerializeField] Text currentBiasText;
 
     public Button drawButton;
     public Button standButton;
     #endregion
 
-    public int coins = 0;
+    int coins = 5;
 
     bool roundFinished = false;
 
-    public int currentDay = 1;
-    public int maxDays = 7;
+    int currentDay = 1;
+    int maxDays = 7;
 
     bool waitingNextDay = false;
 
     DayResult lastDayResult = DayResult.None;
 
-
     #region Stress
-    public StressSytem stressSystem;
-    public Slider stressSlider;
+    [SerializeField] StressSytem stressSystem;
+    [SerializeField] Slider stressSlider;
     #endregion
 
     #region Wilds
-    public int remainingWilds = 3;
+    int remainingWilds = 3;
 
-    //Dime
-    DimeGame dimeSystem;
-    public Button dimeWildButton;
-    public float dimeBlockStress = 60f;
+    #region Dime
+    [SerializeField] Button dimeWildButton;
+    [SerializeField] float dimeBlockStress = 60f;
+    [SerializeField] CoinWildController coinWild;
+    [SerializeField] GameObject coinPanel;
+    #endregion
 
     //Slot
     SlotGame slotSystem;
@@ -66,17 +67,16 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region Probability
-    public GameObject biasUI;
+    [SerializeField] GameObject biasUI;
     DeckBias currentPlayerBias = DeckBias.None;
     #endregion
 
     #region NPC
-    public Image bankCardImage;
-    public Text bankHandTotal;
+    [SerializeField] Text bankHandTotal;
     #endregion
 
     #region Shop
-    public GameObject shopUI;
+    [SerializeField] GameObject shopUI;
     #endregion
 
     // Start is called before the first frame update
@@ -86,7 +86,6 @@ public class GameManager : MonoBehaviour
 
         wheelGame = new WheelGame();
         slotSystem = new SlotGame();
-        dimeSystem = new DimeGame();
 
         NewGame();
         ResetWilds();
@@ -107,8 +106,6 @@ public class GameManager : MonoBehaviour
         resultText.text = "";
 
         gameFlow.StartTurn(dealer);
-        DrawBank();
-        //DrawCard();
 
         RefreshUI();
         BlockButtons(true);
@@ -120,7 +117,7 @@ public class GameManager : MonoBehaviour
     {
         if (roundFinished) return;
 
-        //dealer.DrawBankCard();
+        dealer.DrawBankCard();
 
         StringBuilder sb = new StringBuilder();
 
@@ -300,7 +297,8 @@ public class GameManager : MonoBehaviour
         RefreshStressUI();
     }
 
-    public void UseDimeWild()
+    #region CoinWild
+    public void UseCoinWild()
     {
         dimeWildButton.interactable = false;
         roundFinished = true;
@@ -311,9 +309,21 @@ public class GameManager : MonoBehaviour
         if (remainingWilds <= 0)
             return;
 
-        if (dimeSystem.isWin())
+        coinPanel.SetActive(true);
+    }
+
+    public void SideChoose(string playerChoice)
+    {
+        CoinSide coinSide;
+        if (System.Enum.TryParse<CoinSide>(playerChoice, out coinSide))
+            coinWild.UseCoinWild(coinSide, OnCoinWildResult);
+    }
+
+    void OnCoinWildResult(bool isWin)
+    {
+        coins /= 2;
+        if (isWin)
         {
-            coins /= 2;
             EndRound(DayResult.Escape);
             NewGame();//TODO GO BACK TO MENU
         }
@@ -321,7 +331,12 @@ public class GameManager : MonoBehaviour
         RefreshWildsByStress();
         RefreshUI();
         OnWildPress();
+
+        coinWild.DestroyCoin();
+
+        coinPanel.SetActive(false);
     }
+    #endregion
 
     public void UseSlotWild()
     {

@@ -117,7 +117,7 @@ public class CardDealer : MonoBehaviour
 
             // Mueve cada carta suavemente a su posición
             CardMoveAnimation moveAnim = card.GetComponent<CardMoveAnimation>();
-            moveAnim.MoveToPosition(targetPos, card.rotation, bankHandRoot, null);
+            moveAnim.MoveRelayout(targetPos, 0.1f);
         }
     }
 
@@ -140,7 +140,7 @@ public class CardDealer : MonoBehaviour
             Vector3 targetPos = startPos + Vector3.right * distanceBetweenCards * i
                                 + Vector3.up * heightBetweenCards * i;
             CardMoveAnimation moveAnim = card.GetComponent<CardMoveAnimation>();
-            moveAnim.MoveToPosition(targetPos, card.transform.rotation, handRoot, null, 0.05f);
+            moveAnim.MoveRelayout(targetPos, 0.1f);
         }
     }
 

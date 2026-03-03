@@ -15,12 +15,16 @@ public class CardMoveAnimation : MonoBehaviour
 
         float t = 0f;
 
-        while (t < 1f)
+        while (t < moveTime)
         {
-            t += Time.deltaTime / moveTime;
+            t += Time.deltaTime;
 
-            transform.position = Vector3.Lerp(startPos, targetPosition, t);
-            transform.rotation = Quaternion.Slerp(startRot, targetRotation, t);
+
+            float k = Mathf.Clamp01(t / moveTime);
+            float eased = EaseOutCubic(k);
+
+            transform.position = Vector3.Lerp(startPos, targetPosition, eased);
+            transform.rotation = Quaternion.Slerp(startRot, targetRotation, eased);
 
             yield return null;
         }
@@ -50,13 +54,17 @@ public class CardMoveAnimation : MonoBehaviour
         Vector3 upPos = startPos + liftDir * lift;
         float t = 0f;
 
-        while (t < 1f)
+        while (t < time)
         {
-            t += Time.deltaTime / time;
-            float h = Mathf.Sin(t * Mathf.PI);
+            t += Time.deltaTime;
+
+            float k = Mathf.Clamp01(t / time);
+            float eased = EaseOutCubic(k);
+
+            float h = Mathf.Sin(k * Mathf.PI);
 
             transform.position = Vector3.Lerp(startPos, upPos, h);
-            transform.rotation = Quaternion.Slerp(startRot, targetRotation, t);
+            transform.rotation = Quaternion.Slerp(startRot, targetRotation, eased);
 
             yield return null;
         }
@@ -65,5 +73,38 @@ public class CardMoveAnimation : MonoBehaviour
         transform.rotation = targetRotation;
 
         onComplete?.Invoke();
+    }
+
+    public void MoveRelayout(Vector3 targetPos, float time)
+    {
+        StopAllCoroutines();
+        StartCoroutine(RelayoutRoutine(targetPos, time));
+    }
+
+    IEnumerator RelayoutRoutine(Vector3 targetPos, float time)
+    {
+        Vector3 startPos = transform.position;
+
+        float t = 0f;
+
+        while (t < time)
+        {
+            t += Time.deltaTime;
+
+            float k = Mathf.Clamp01(t / time);
+
+            float eased = k * k * (3f - 2f * k); // smoothstep manual
+
+            transform.position = Vector3.Lerp(startPos, targetPos, eased);
+
+            yield return null;
+        }
+
+        transform.position = targetPos;
+    }
+
+    float EaseOutCubic(float t)
+    {
+        return 1f - Mathf.Pow(1f - t, 3f);
     }
 }
