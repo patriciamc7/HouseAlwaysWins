@@ -14,6 +14,9 @@ public enum DayResult
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] CardDealer dealer;
+    [SerializeField] GameFlow gameFlow;
+
     const float winPoints = 7.5f;
 
     #region UI
@@ -39,7 +42,6 @@ public class GameManager : MonoBehaviour
 
     DayResult lastDayResult = DayResult.None;
 
-    CardDealer dealer;
 
     #region Stress
     public StressSytem stressSystem;
@@ -69,7 +71,6 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region NPC
-    public BankNPC bankNPC;
     public Image bankCardImage;
     public Text bankHandTotal;
     #endregion
@@ -87,8 +88,6 @@ public class GameManager : MonoBehaviour
         slotSystem = new SlotGame();
         dimeSystem = new DimeGame();
 
-        bankNPC = new BankNPC();
-
         NewGame();
         ResetWilds();
     }
@@ -103,15 +102,13 @@ public class GameManager : MonoBehaviour
 
         dealer.StartRun(currentPlayerBias);
 
-        bankNPC.Clear();
-
         lastDayResult = DayResult.None;
         roundFinished = false;
         resultText.text = "";
 
+        gameFlow.StartTurn(dealer);
         DrawBank();
-
-        DrawCard();
+        //DrawCard();
 
         RefreshUI();
         BlockButtons(true);
@@ -119,20 +116,18 @@ public class GameManager : MonoBehaviour
         RefreshWildsByStress();
     }
 
-    public void DrawBank() //TODO
+    public void DrawBank()
     {
-        //if (roundFinished) return;
+        if (roundFinished) return;
 
-        //var card = deck.Draw();
-        //if (card != null)
-        //    bankNPC.Add(card);
+        //dealer.DrawBankCard();
 
-        //StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
-        //foreach (var c in bankNPC.cards)
-        //    sb.AppendLine(c.ToString());
+        foreach (var c in dealer.bankHand.cards)
+            sb.AppendLine(c.ToString());
 
-        //bankHandTotal.text = sb.ToString();
+        bankHandTotal.text = sb.ToString();
     }
 
     /// <summary>
@@ -142,7 +137,7 @@ public class GameManager : MonoBehaviour
     {
         if (roundFinished) return;
 
-        //Draw card dealer;
+        dealer.DrawCard();
 
         CheckResult();
         stressSystem.ProcessCardResult(dealer.hand.cards.Count, dealer.hand.GetTotal());
@@ -220,7 +215,7 @@ public class GameManager : MonoBehaviour
     DayResult ResolveStand()
     {
         float total = dealer.hand.GetTotal();
-        float totalBank = bankNPC.GetTotal();
+        float totalBank = dealer.bankHand.GetTotal();
 
         if (total <= totalBank)
         {

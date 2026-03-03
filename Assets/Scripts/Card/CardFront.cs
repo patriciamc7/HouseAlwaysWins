@@ -1,15 +1,16 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using TMPro;
 
 
 public class CardFront : MonoBehaviour
 {
-    [SerializeField] List<Text> valueText;
+    [SerializeField] List<TextMeshPro> valueText;
 
     public void SetValue(int value)
     {
-        foreach (Text text in valueText)
+        foreach (TextMeshPro text in valueText)
         {
             text.text = value.ToString();
         }

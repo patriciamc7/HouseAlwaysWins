@@ -3,14 +3,12 @@ using UnityEngine;
 
 public class CardMoveAnimation : MonoBehaviour
 {
-    public float moveTime = 0.25f;
-
-    public void MoveToPosition(Vector3 targetPosition, Quaternion targetRotation, Transform newParent, System.Action onComplete)
+    public void MoveToPosition(Vector3 targetPosition, Quaternion targetRotation, Transform newParent, System.Action onComplete, float moveTime = 0.25f)
     {
-        StartCoroutine(MoveRoutine(targetPosition, targetRotation, newParent, onComplete));
+        StartCoroutine(MoveRoutine(targetPosition, targetRotation, newParent, onComplete, moveTime));
     }
 
-    IEnumerator MoveRoutine(Vector3 targetPosition, Quaternion targetRotation, Transform newParent, System.Action onComplete)
+    IEnumerator MoveRoutine(Vector3 targetPosition, Quaternion targetRotation, Transform newParent, System.Action onComplete, float moveTime)
     {
         Vector3 startPos = transform.position;
         Quaternion startRot = transform.rotation;
@@ -30,17 +28,17 @@ public class CardMoveAnimation : MonoBehaviour
         transform.position = targetPosition;
         transform.rotation = targetRotation;
 
-        transform.SetParent(newParent);
+        transform.SetParent(newParent, true);
 
         onComplete?.Invoke();
     }
 
-    public void FlipTo(Quaternion targetRotation, float time = 0.25f, float lift = 1f)
+    public void FlipTo(Quaternion targetRotation, System.Action onComplete, float time = 0.25f, float lift = 1f)
     {
-        StartCoroutine(FlipRoutine(targetRotation, time, lift));
+        StartCoroutine(FlipRoutine(targetRotation, time, lift, onComplete));
     }
 
-    IEnumerator FlipRoutine(Quaternion targetRotation, float time, float lift)
+    IEnumerator FlipRoutine(Quaternion targetRotation, float time, float lift, System.Action onComplete)
     {
         Quaternion startRot = transform.rotation;
         Vector3 startPos = transform.position;
@@ -65,5 +63,7 @@ public class CardMoveAnimation : MonoBehaviour
 
         transform.position = startPos;
         transform.rotation = targetRotation;
+
+        onComplete?.Invoke();
     }
 }
