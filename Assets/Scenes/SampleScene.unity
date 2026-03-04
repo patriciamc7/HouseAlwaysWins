@@ -4228,7 +4228,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9583d37fe4f706840b488d36df4d8925, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visual: {fileID: 0}
+  visual: {fileID: 1563529554}
   slots:
   - name: 
     color: {r: 1, g: 0, b: 0, a: 0}

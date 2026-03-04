@@ -7,7 +7,7 @@ using UnityEngine;
 public class WheelWildLogic : MonoBehaviour
 {
     [SerializeField] WheelWildAnimation visual;
-    [SerializeField] WheelSlot[] slots;
+    public WheelSlot[] slots;
 
     Action<bool> Action;
 
