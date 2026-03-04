@@ -1015,8 +1015,8 @@ MonoBehaviour:
   dimeBlockStress: 60
   coinWild: {fileID: 62768960}
   coinPanel: {fileID: 1260312554}
-  wheelPanel: {fileID: 1563529549}
-  wheelGame: {fileID: 1910092663}
+  wheelPanel: {fileID: 1704079125}
+  wheelGame: {fileID: 1093555332}
   wheelWildButton: {fileID: 631583882}
   slotWildButton: {fileID: 50860564}
   biasUI: {fileID: 1402650901}
@@ -3255,7 +3255,7 @@ GameObject:
   - component: {fileID: 847364122}
   - component: {fileID: 847364121}
   m_Layer: 0
-  m_Name: Coin (1)
+  m_Name: Ball
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4228,54 +4228,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9583d37fe4f706840b488d36df4d8925, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visual: {fileID: 1563529554}
+  visual: {fileID: 1704079127}
   slots:
   - name: 
-    color: {r: 1, g: 0, b: 0, a: 0}
+    color: {r: 1, g: 0, b: 0, a: 1}
     startAngle: 0
     endAngle: 30
   - name: 
-    color: {r: 0, g: 0, b: 0, a: 0}
+    color: {r: 0, g: 0, b: 0, a: 1}
     startAngle: 30
     endAngle: 60
   - name: 
-    color: {r: 1, g: 0, b: 0, a: 0}
+    color: {r: 1, g: 0, b: 0, a: 1}
     startAngle: 60
     endAngle: 90
   - name: 
-    color: {r: 0, g: 0, b: 0, a: 0}
+    color: {r: 0, g: 0, b: 0, a: 1}
     startAngle: 90
     endAngle: 120
   - name: 
-    color: {r: 1, g: 0, b: 0, a: 0}
+    color: {r: 1, g: 0, b: 0, a: 1}
     startAngle: 120
     endAngle: 150
   - name: 
-    color: {r: 0, g: 0, b: 0, a: 0}
+    color: {r: 0, g: 0, b: 0, a: 1}
     startAngle: 150
     endAngle: 170
   - name: 
-    color: {r: 1, g: 0, b: 0, a: 0}
+    color: {r: 1, g: 0, b: 0, a: 1}
     startAngle: 170
     endAngle: 210
   - name: 
-    color: {r: 0, g: 0, b: 0, a: 0}
+    color: {r: 0, g: 0, b: 0, a: 1}
     startAngle: 210
     endAngle: 240
   - name: 
-    color: {r: 1, g: 0, b: 0, a: 0}
+    color: {r: 1, g: 0, b: 0, a: 1}
     startAngle: 240
     endAngle: 270
   - name: 
-    color: {r: 0, g: 0, b: 0, a: 0}
+    color: {r: 0, g: 0, b: 0, a: 1}
     startAngle: 270
     endAngle: 310
   - name: 
-    color: {r: 0, g: 0, b: 0, a: 0}
+    color: {r: 1, g: 0, b: 0, a: 1}
     startAngle: 310
     endAngle: 330
   - name: 
-    color: {r: 1, g: 0, b: 0, a: 0}
+    color: {r: 0, g: 0, b: 0, a: 1}
     startAngle: 330
     endAngle: 360
 --- !u!1 &1167867192
@@ -4976,7 +4976,6 @@ GameObject:
   - component: {fileID: 1563529552}
   - component: {fileID: 1563529551}
   - component: {fileID: 1563529550}
-  - component: {fileID: 1563529554}
   m_Layer: 5
   m_Name: WheelPanel
   m_TagString: Untagged
@@ -5071,25 +5070,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 6.04}
   m_SizeDelta: {x: 914, y: 514}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1563529554
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1563529549}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61d2e16df15ac394095a2d724eddc7f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wheel: {fileID: 243438624}
-  ball: {fileID: 1606536872}
-  center: {fileID: 1704079126}
-  ballRadius: 0.0409
-  spinTime: 3
-  wheelExtraTurns: 4
-  ballExtraTurns: 6
 --- !u!1 &1606536871
 GameObject:
   m_ObjectHideFlags: 0
@@ -5131,6 +5111,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1704079126}
+  - component: {fileID: 1704079127}
   m_Layer: 5
   m_Name: WheelContainer
   m_TagString: Untagged
@@ -5158,6 +5139,25 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1704079127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1704079125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61d2e16df15ac394095a2d724eddc7f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wheel: {fileID: 243438624}
+  ball: {fileID: 1606536872}
+  center: {fileID: 1606536872}
+  ballRadius: 0.0409
+  spinTime: 3
+  wheelExtraTurns: 4
+  ballExtraTurns: 6
 --- !u!1 &1735726650
 GameObject:
   m_ObjectHideFlags: 0
@@ -5597,7 +5597,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9583d37fe4f706840b488d36df4d8925, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visual: {fileID: 1563529554}
+  visual: {fileID: 0}
   slots: []
 --- !u!4 &1910092664
 Transform:
