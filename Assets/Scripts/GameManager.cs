@@ -57,13 +57,16 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject coinPanel;
     #endregion
 
+    #region Wheel
+    [SerializeField] GameObject wheelPanel;
+    [SerializeField] WheelWildLogic wheelGame;
+    [SerializeField] Button wheelWildButton;
+    #endregion
+
     //Slot
     SlotGame slotSystem;
     public Button slotWildButton;
 
-    //Wheel
-    WheelGame wheelGame;
-    public Button wheelWildButton;
     #endregion
 
     #region Probability
@@ -83,8 +86,6 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         stressSystem = new StressSytem();
-
-        wheelGame = new WheelGame();
         slotSystem = new SlotGame();
 
         NewGame();
@@ -338,6 +339,44 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
+    #region WheelWild
+    public void useWheelWild()
+    {
+        wheelWildButton.interactable = false;
+
+        if (roundFinished) return;
+
+        if (remainingWilds <= 0) return;
+
+        wheelPanel.SetActive(true);
+    }
+
+    public void SideColor(string playerChoice)
+    {
+        Color playerColor;
+        if (playerChoice == "Red")
+            playerColor = Color.red;
+        else
+            playerColor = Color.black;
+
+        wheelGame.PlayWheel(playerColor, OnWheelWildResult);
+    }
+
+    void OnWheelWildResult(bool isWin)
+    {
+        if (isWin)
+            coins *= 2;
+        else
+            coins = 0;
+        
+        RefreshWildsByStress();
+        RefreshUI();
+        OnWildPress();
+
+        wheelPanel.SetActive(false);
+    }
+
+    #endregion
     public void UseSlotWild()
     {
         slotWildButton.interactable = false;
@@ -361,29 +400,6 @@ public class GameManager : MonoBehaviour
         }
 
         RefreshUI();
-        OnWildPress();
-    }
-
-    public void useWheelWild()
-    {
-        wheelWildButton.interactable = false;
-
-        if (roundFinished) return;
-
-        if (remainingWilds <= 0) return;
-
-        bool isWin = wheelGame.isWin();
-        if (isWin)
-        {
-            coins *= 2;
-        }
-        else
-        {
-            coins = 0;
-        }
-
-        RefreshUI();
-        OnWildPress();
         OnWildPress();
     }
 
