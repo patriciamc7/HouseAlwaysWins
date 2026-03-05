@@ -63,9 +63,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] Button wheelWildButton;
     #endregion
 
-    //Slot
-    SlotGame slotSystem;
+    #region Slot
+
     public Button slotWildButton;
+    [SerializeField] SlotMachine slotMachine;
+    #endregion
 
     #endregion
 
@@ -86,7 +88,6 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         stressSystem = new StressSytem();
-        slotSystem = new SlotGame();
 
         NewGame();
         ResetWilds();
@@ -377,6 +378,14 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion
+
+    #region SpinWild
+    public void Spin()
+    {
+        slotMachine.Spin();
+    }
+
+    #endregion
     public void UseSlotWild()
     {
         slotWildButton.interactable = false;
@@ -387,17 +396,17 @@ public class GameManager : MonoBehaviour
 
         if (dealer.hand.cards.Count == 0) return;
 
-        if (slotSystem.isWin())
-        {
-            //TODO
-            //var newCard = deck.Draw();
-            //if (newCard == null) return;
+        //if (slotSystem.isWin())
+        //{
+        //    //TODO
+        //    //var newCard = deck.Draw();
+        //    //if (newCard == null) return;
 
-            //TODO CLICK
-            //int index = Random.Range(0, dealer.hand.cards.Count);
+        //    //TODO CLICK
+        //    //int index = Random.Range(0, dealer.hand.cards.Count);
 
-            //dealer.hand.cards[index] = newCard;
-        }
+        //    //dealer.hand.cards[index] = newCard;
+        //}
 
         RefreshUI();
         OnWildPress();
