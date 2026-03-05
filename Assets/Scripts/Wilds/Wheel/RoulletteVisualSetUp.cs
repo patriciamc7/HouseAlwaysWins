@@ -11,10 +11,11 @@ public class WheelVisualSetup : MonoBehaviour
 
     public bool autoClearOldSlots = true; // borra slots anteriores al generar
 
-    //public void Start()
-    //{
-    //    GenerateSlots();
-    //}
+    public void Awake()
+    {
+        GenerateSlots();
+    }
+
     public void GenerateSlots()
     {
         if (autoClearOldSlots)
@@ -30,23 +31,31 @@ public class WheelVisualSetup : MonoBehaviour
 
         for (int i = 0; i < totalSlots; i++)
         {
-            GameObject slotGO = GameObject.CreatePrimitive(PrimitiveType.Quad);
-            slotGO.name = "Slot " + (i + 1);
-            slotGO.transform.SetParent(transform);
-            slotGO.transform.localPosition = Vector3.zero;
+            GameObject slot = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            slot.name = "Slot_" + i;
 
-            // rotar para que forme el círculo
-            slotGO.transform.localRotation = Quaternion.Euler(0f, 0f, i * angleStep);
+            slot.transform.SetParent(transform);
 
-            // escalar para que se vea como sector
-            slotGO.transform.localScale = new Vector3(slotWidth, radius, 1f);
+            float angle = i * angleStep;
+            float rad = angle * Mathf.Deg2Rad;
 
-            // mover hacia el borde
-            slotGO.transform.localPosition = slotGO.transform.up * radius / 2f;
+            // posición exacta en el círculo
+            Vector3 pos = new Vector3(
+                Mathf.Cos(rad) * radius,
+                Mathf.Sin(rad) * radius,
+                0f
+            );
 
-            // asignar color
-            Renderer rend = slotGO.GetComponent<Renderer>();
-            rend.material = (i % 2 == 0) ? redMaterial : blackMaterial;
+            slot.transform.localPosition = pos;
+
+            // rotar para que mire hacia fuera
+            slot.transform.localRotation = Quaternion.Euler(0, 0, angle - 90f);
+
+            // tamaño del sector
+            slot.transform.localScale = new Vector3(slotWidth, slotWidth, 1);
+
+            Renderer r = slot.GetComponent<Renderer>();
+            r.material = (i % 2 == 0) ? redMaterial : blackMaterial;
         }
     }
 }
