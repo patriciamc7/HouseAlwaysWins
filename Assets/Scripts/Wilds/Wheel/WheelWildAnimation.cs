@@ -22,6 +22,7 @@ public class WheelWildAnimation : MonoBehaviour
 
     public void Play(float targetBallAngle, Action onFinished)
     {
+        ball.gameObject.SetActive(true);
         StopAllCoroutines();
         StartCoroutine(SpinRoutine(targetBallAngle, onFinished));
     }

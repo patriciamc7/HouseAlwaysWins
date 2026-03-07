@@ -35,6 +35,7 @@ public class WheelWildLogic : MonoBehaviour
         // Calcular el ángulo central
         float targetAngle = (chosenSlot.startAngle + chosenSlot.endAngle) / 2f;
 
+        Debug.Log(playerWins);
         // Llamar a RouletteVisual para animar
         visual.Play(targetAngle, () =>
         {
