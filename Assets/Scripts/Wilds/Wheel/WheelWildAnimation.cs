@@ -10,7 +10,7 @@ public class WheelWildAnimation : MonoBehaviour
     public Transform center;
 
     [Header("Ball orbit")]
-    public float ballRadius = 0.22f;
+    public float ballRadius = 153f;
 
     [Header("Spin")]
     public float spinTime = 3f;
@@ -32,11 +32,9 @@ public class WheelWildAnimation : MonoBehaviour
         ballStartAngle = GetBallAngle();
         wheelStartAngle = wheel.localEulerAngles.z;
 
-        float finalBallAngle =
-            ballStartAngle + 360f * ballExtraTurns + targetBallAngle;
+        float finalWheelAngle = wheelStartAngle + 360f * wheelExtraTurns;
 
-        float finalWheelAngle =
-            wheelStartAngle + 360f * wheelExtraTurns + targetBallAngle * 0.5f;
+        float finalBallAngle = mapBallAngle(targetBallAngle) + 360f * ballExtraTurns + finalWheelAngle;
 
         float t = 0f;
 
@@ -68,16 +66,46 @@ public class WheelWildAnimation : MonoBehaviour
     float GetBallAngle()
     {
         Vector2 dir = ball.localPosition;
-        return Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        return angle;
     }
 
     void SetBallAngle(float angle)
     {
         float rad = angle * Mathf.Deg2Rad;
-        Vector3 localPos = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f) * ballRadius;
-        ball.localPosition = localPos; // Z = 0 siempre
+        ball.localPosition = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0) * ballRadius;
     }
 
+    float mapBallAngle(float angle)
+    {
+        if (angle == 0)
+            return 90;
+        else if (angle == 30)
+            return 60;
+        else if (angle == 60f)
+            return 30;
+        else if (angle == 90)
+            return 0;
+        else if (angle == 120)
+            return 330;
+        else if (angle == 150)
+            return 300;
+        else if (angle == 180)
+            return 270;
+        else if (angle == 210)
+            return 240;
+        else if (angle == 240)
+            return 210;
+        else if (angle == 270)
+            return 180;
+        else if (angle == 300)
+            return 150;
+        else if (angle == 330)
+            return 120;
+
+        return 0;
+
+    }
     float EaseOutCubic(float t)
     {
         return 1f - Mathf.Pow(1f - t, 3f);
