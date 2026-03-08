@@ -21,6 +21,7 @@ public class WheelWildLogic : MonoBehaviour
 
     public void PlayWheel(Color playerColorChoice, Action <bool> OnComplete)
     {
+        Action = OnComplete;
         bool playerWins = DecideIfPlayerWins();
         List<WheelSlot> possibleSlots;
         if (playerWins)

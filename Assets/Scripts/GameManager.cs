@@ -66,7 +66,6 @@ public class GameManager : MonoBehaviour
     #region Slot
 
     public Button slotWildButton;
-    [SerializeField] SlotMachine slotMachine;
     #endregion
 
     #endregion
@@ -311,6 +310,7 @@ public class GameManager : MonoBehaviour
         if (remainingWilds <= 0)
             return;
 
+        ShowUI(false);
         coinPanel.SetActive(true);
     }
 
@@ -337,18 +337,21 @@ public class GameManager : MonoBehaviour
         coinWild.DestroyCoin();
 
         coinPanel.SetActive(false);
+        ShowUI(true);
     }
     #endregion
 
     #region WheelWild
     public void useWheelWild()
     {
+
         wheelWildButton.interactable = false;
 
         if (roundFinished) return;
 
         if (remainingWilds <= 0) return;
 
+        ShowUI(false);
         wheelPanel.SetActive(true);
     }
 
@@ -375,17 +378,16 @@ public class GameManager : MonoBehaviour
         OnWildPress();
 
         wheelPanel.SetActive(false);
+        ShowUI(true);
     }
 
     #endregion
 
-    #region SpinWild
+    #region SlotWild
     public void Spin()
     {
-        slotMachine.Spin();
+        //slotMachine.Spin();
     }
-
-    #endregion
     public void UseSlotWild()
     {
         slotWildButton.interactable = false;
@@ -412,6 +414,8 @@ public class GameManager : MonoBehaviour
         OnWildPress();
     }
 
+
+    #endregion
     void ApplyDayReward()
     {
         int reward = 0;
@@ -487,6 +491,11 @@ public class GameManager : MonoBehaviour
         UpdateHouseBias();
     }
 
+    void ShowUI(bool active)
+    {
+        drawButton.gameObject.SetActive(active);
+        standButton.gameObject.SetActive(active);
+    }
 
 }
 public static class EnumExtensions
