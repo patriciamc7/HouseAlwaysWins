@@ -8,10 +8,9 @@ public class Reel : MonoBehaviour
     [SerializeField] float reelExtraTurns = 4f;
     public IEnumerator SpinReel(float targetAngle)
     {
-
         float reelStartAngle = this.transform.localEulerAngles.z;
 
-        float finalWheelAngle = reelStartAngle + 360f * reelExtraTurns + targetAngle;
+        float finalWheelAngle = -360f * reelExtraTurns + targetAngle;
 
         float t = 0f;
 
