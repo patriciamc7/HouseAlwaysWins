@@ -29,6 +29,8 @@ public class GameManager : MonoBehaviour
 
     public Button drawButton;
     public Button standButton;
+
+    [SerializeField] GameObject cardButtons;
     #endregion
 
     int coins = 5;
@@ -88,6 +90,7 @@ public class GameManager : MonoBehaviour
     {
         stressSystem = new StressSytem();
 
+        shopUI.GetComponent<ShopManager>().InitShop();
         NewGame();
         ResetWilds();
     }
@@ -112,6 +115,7 @@ public class GameManager : MonoBehaviour
         BlockButtons(true);
 
         RefreshWildsByStress();
+        shopUI.GetComponent<ShopManager>().NewGame();
     }
 
     public void DrawBank()
@@ -241,6 +245,7 @@ public class GameManager : MonoBehaviour
     public void NextDay()
     {
         shopUI.SetActive(false);
+        cardButtons.SetActive(true);
 
         if (!waitingNextDay) return;
 
@@ -453,6 +458,7 @@ public class GameManager : MonoBehaviour
         else
         {
             biasUI.SetActive(true);
+            cardButtons.SetActive(false);
         }
     }
 
@@ -462,11 +468,15 @@ public class GameManager : MonoBehaviour
             NextDay();
 
         biasUI.SetActive(false);
+        cardButtons.SetActive(true);
+
     }
 
     void OpenShop()
     {
         shopUI.SetActive(true);
+        shopUI.GetComponent<ShopManager>().StartShop();
+        cardButtons.SetActive(false);
 
         //TODO
         //RefreshShopItems();
@@ -475,6 +485,7 @@ public class GameManager : MonoBehaviour
     public void OnShopClosed()
     {
         shopUI.SetActive(false);
+        cardButtons.SetActive(true);
         UpdateHouseBias();
     }
 
