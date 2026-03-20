@@ -11,6 +11,15 @@ public enum DayResult
     Stand,
     Escape
 }
+public enum GameEventType
+{
+    ChanceGame,
+    SevenAndHalf, 
+    DeckModifier,
+    Shop,
+    FinalGame,
+    EndRun
+}
 
 public class GameManager : MonoBehaviour
 {
@@ -27,18 +36,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] Text coinsText;
     [SerializeField] Text currentBiasText;
 
-    public Button drawButton;
-    public Button standButton;
-
     [SerializeField] GameObject cardButtons;
     #endregion
 
     int coins = 5;
 
-    bool roundFinished = false;
-
-    int currentDay = 1;
-    int maxDays = 7;
+    int currentDay = 0;
+    int currentEventIndex = 0;
 
     bool waitingNextDay = false;
 
@@ -53,8 +57,6 @@ public class GameManager : MonoBehaviour
     int remainingWilds = 3;
 
     #region Dime
-    [SerializeField] Button dimeWildButton;
-    [SerializeField] float dimeBlockStress = 60f;
     [SerializeField] CoinWildController coinWild;
     [SerializeField] GameObject coinPanel;
     #endregion
@@ -62,11 +64,9 @@ public class GameManager : MonoBehaviour
     #region Wheel
     [SerializeField] GameObject wheelPanel;
     [SerializeField] WheelWildLogic wheelGame;
-    [SerializeField] Button wheelWildButton;
     #endregion
 
     #region Slot
-    [SerializeField] Button slotWildButton;
     [SerializeField] GameObject slotWildPanel;
     #endregion
 
@@ -89,10 +89,8 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         stressSystem = new StressSytem();
-
         shopUI.GetComponent<ShopManager>().InitShop();
         NewGame();
-        ResetWilds();
     }
 
     /// <summary>
@@ -100,28 +98,91 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void NewGame()
     {
-        if (currentDay == 1)
+        currentDay = 0;
+        currentEventIndex = 0;
+
+        shopUI.GetComponent<ShopManager>().NewGame();
+
+        if (currentDay == 0)
             stressSystem.Reset();
 
         dealer.StartRun(currentPlayerBias);
-
         lastDayResult = DayResult.None;
-        roundFinished = false;
+
         resultText.text = "";
-
-        gameFlow.StartTurn(dealer);
-
-        RefreshUI();
         BlockButtons(true);
-
-        RefreshWildsByStress();
-        shopUI.GetComponent<ShopManager>().NewGame();
+        StartEvent();
     }
 
+    private void ResetHand()
+    {
+        dealer.ResetHand();
+    }
+    public void StartEvent()
+    {
+        GameEventType currentEvent =
+            GameFlowConfig.days[currentDay][currentEventIndex];
+
+        Debug.Log("Día " + (currentDay + 1) + " - Evento: " + currentEvent);
+
+        switch (currentEvent)
+        {
+            case GameEventType.ChanceGame:
+                cardButtons.SetActive(false);
+                StartChanceGame();
+                break;
+
+            case GameEventType.SevenAndHalf:
+                ResetHand();
+                StartSevenAndHalf();
+                break;
+
+            case GameEventType.DeckModifier:
+                UpdateDeckBias();
+                break;
+
+            case GameEventType.Shop:
+                OpenShop();
+            break;
+
+            case GameEventType.FinalGame:
+                //StartFinalGame();
+                StartSevenAndHalf();
+                break;
+
+            case GameEventType.EndRun:
+                //TODO GO TO MENU
+                break;
+        }
+    }
+
+    public void NextEvent()
+    {
+        currentEventIndex++;
+
+        if (currentEventIndex >= GameFlowConfig.days[currentDay].Count)
+        {
+            currentDay++;
+            currentEventIndex = 0;
+
+            if (currentDay >= GameFlowConfig.days.Count)
+            {
+                return;
+            }
+        }
+
+        StartEvent();
+    }
+
+    private void StartSevenAndHalf()
+    {
+        BlockButtons(true);
+        cardButtons.SetActive(true);
+        gameFlow.StartTurn(dealer);
+        RefreshUI();
+    }
     public void DrawBank()
     {
-        if (roundFinished) return;
-
         dealer.DrawBankCard();
 
         StringBuilder sb = new StringBuilder();
@@ -137,8 +198,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void DrawCard()
     {
-        if (roundFinished) return;
-
         dealer.DrawCard();
 
         CheckResult();
@@ -165,7 +224,7 @@ public class GameManager : MonoBehaviour
 
         handText.text = sb.ToString();
         totalText.text = "Total: " + dealer.hand.GetTotal();
-        dayText.text = currentDay + " / " + maxDays;
+        dayText.text = currentDay + 1 + " / " + GameFlowConfig.days.Count;
         coinsText.text = "Coins: " + coins;
         currentBiasText.text = "Current bias: " + currentPlayerBias.ToReadable();
 
@@ -177,8 +236,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     void CheckResult()
     {
-        if (roundFinished) return;
-
         float total = dealer.hand.GetTotal();
 
         if (total == winPoints)
@@ -192,7 +249,7 @@ public class GameManager : MonoBehaviour
             BlockButtons(false);
             resultText.text = "Lose with " + total + " points";
             EndRound(DayResult.Bust);
-            //TODo GAMEOVER
+            //TODO GAMEOVER
         }
         else
         {
@@ -202,14 +259,14 @@ public class GameManager : MonoBehaviour
 
     void BlockButtons(bool interactable)
     {
-        standButton.interactable = interactable;
-        drawButton.interactable = interactable;
+        foreach(Button but in cardButtons.GetComponentsInChildren<Button>())
+        {
+            but.interactable = interactable;
+        }
     }
 
     public void Stand()
     {
-        if (roundFinished) return;
-
         DayResult result = ResolveStand();
         EndRound(result);
     }
@@ -235,23 +292,17 @@ public class GameManager : MonoBehaviour
     void EndRound(DayResult result)
     {
         lastDayResult = result;
-        roundFinished = true;
         waitingNextDay = result == DayResult.ExactWin || result == DayResult.Stand;
 
-        if (waitingNextDay)
-            OpenShop();
+        NextEvent();
     }
 
     public void NextDay()
     {
-        shopUI.SetActive(false);
-        cardButtons.SetActive(true);
-
         if (!waitingNextDay) return;
 
         stressSystem.ProcessDayResult(lastDayResult, currentDay);
         ApplyDayReward();
-        RefreshWildsByStress();
 
         if (stressSystem.IsCollapsed())
         {
@@ -259,17 +310,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        currentDay++;
-
-        if (currentDay > maxDays) //TODO poner al final de la ronda
-        {
-            resultText.text = "You survived 7 days!!";
-            return;
-        }
-
         waitingNextDay = false;
-        NewGame();
-
     }
 
     void RefreshStressUI()
@@ -278,15 +319,6 @@ public class GameManager : MonoBehaviour
 
         stressSlider.maxValue = stressSystem.maxStress;
         stressSlider.value = stressSystem.currentStress;
-    }
-
-    void RefreshWildsByStress()
-    {
-        if (dimeWildButton == null || stressSystem == null) return;
-
-        bool blocked = stressSystem.currentStress >= dimeBlockStress;
-
-        dimeWildButton.interactable = !blocked;
     }
 
     void OnWildPress()
@@ -303,19 +335,30 @@ public class GameManager : MonoBehaviour
         RefreshStressUI();
     }
 
+    void StartChanceGame()
+    {
+        int r = Random.Range(0, 3); //TODO
+
+        switch (r)
+        {
+            case 0:
+                useWheelWild();
+                Debug.Log("Ruleta");
+                break;
+            case 1:
+                UseSlotWild();
+                Debug.Log("Slot");
+                break;
+            case 2:
+                UseCoinWild();
+                Debug.Log("Cara o cruz");
+                break;
+        }
+    }
+
     #region CoinWild
     public void UseCoinWild()
     {
-        dimeWildButton.interactable = false;
-        roundFinished = true;
-
-        standButton.interactable = false;
-        drawButton.interactable = false;
-
-        if (remainingWilds <= 0)
-            return;
-
-        ShowUI(false);
         coinPanel.SetActive(true);
     }
 
@@ -331,32 +374,23 @@ public class GameManager : MonoBehaviour
         coins /= 2;
         if (isWin)
         {
-            EndRound(DayResult.Escape);
-            NewGame();//TODO GO BACK TO MENU
+           // EndRound(DayResult.Escape);
+            //NewGame();//TODO GO BACK TO MENU
         }
 
-        RefreshWildsByStress();
         RefreshUI();
         OnWildPress();
 
         coinWild.DestroyCoin();
 
         coinPanel.SetActive(false);
-        ShowUI(true);
+        NextEvent();
     }
     #endregion
 
     #region WheelWild
     public void useWheelWild()
     {
-
-        wheelWildButton.interactable = false;
-
-        if (roundFinished) return;
-
-        if (remainingWilds <= 0) return;
-
-        ShowUI(false);
         wheelPanel.SetActive(true);
     }
 
@@ -378,12 +412,11 @@ public class GameManager : MonoBehaviour
         else
             coins = 0;
         
-        RefreshWildsByStress();
         RefreshUI();
         OnWildPress();
 
         wheelPanel.SetActive(false);
-        ShowUI(true);
+        NextEvent();
     }
 
     #endregion
@@ -391,23 +424,13 @@ public class GameManager : MonoBehaviour
     #region SlotWild
     public void UseSlotWild()
     {
-        slotWildButton.interactable = false;
-
-        if (roundFinished) return;
-
-        if (remainingWilds <= 0) return;
-
-        if (dealer.hand.cards.Count == 0) return;
-
-
         slotWildPanel.SetActive(true);
 
         RefreshUI();
         OnWildPress();
     }
-
-
     #endregion
+
     void ApplyDayReward()
     {
         int reward = 0;
@@ -429,14 +452,7 @@ public class GameManager : MonoBehaviour
         coins += reward;
     }
 
-    void ResetWilds()
-    {
-        dimeWildButton.interactable = true;
-        slotWildButton.interactable = true;
-        wheelWildButton.interactable = true;
-    }
-
-    void UpdateHouseBias()
+    void UpdateDeckBias()
     {
         if (lastDayResult == DayResult.Bust)
         {
@@ -465,36 +481,43 @@ public class GameManager : MonoBehaviour
     public void PlayerChangeHouseBias(string bias)
     {
         if (System.Enum.TryParse<DeckBias>(bias, out currentPlayerBias))
+        {
+            biasUI.SetActive(false);
+
+            NextEvent();
+        }
             NextDay();
-
-        biasUI.SetActive(false);
-        cardButtons.SetActive(true);
-
     }
 
+    #region Shop
     void OpenShop()
     {
         shopUI.SetActive(true);
         shopUI.GetComponent<ShopManager>().StartShop();
         cardButtons.SetActive(false);
-
-        //TODO
-        //RefreshShopItems();
     }
 
     public void OnShopClosed()
     {
         shopUI.SetActive(false);
-        cardButtons.SetActive(true);
-        UpdateHouseBias();
+        NextEvent();
     }
 
-    void ShowUI(bool active)
+    public void OnShopItemClick(GameObject currentObject)
     {
-        drawButton.gameObject.SetActive(active);
-        standButton.gameObject.SetActive(active);
+        shopObject shopItem = currentObject.GetComponent<shopObject>();
+        if (coins >= shopItem.price)
+        {
+            coins = coins - shopItem.price;
+            //TODO APPLY EFFECTS
+            Destroy(currentObject);
+        }
+        else
+        {
+            //NO SE PUEDE COMPRAR
+        }
     }
-
+    #endregion
 }
 public static class EnumExtensions
 {

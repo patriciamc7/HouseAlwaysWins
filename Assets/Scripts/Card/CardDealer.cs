@@ -27,7 +27,6 @@ public class CardDealer : MonoBehaviour
 
     public void StartRun(DeckBias bias)
     {
-        ResetHand();
         deck = new SpanishDeck();
         bankHand = new PlayerHand();
         hand = new PlayerHand();
@@ -36,8 +35,7 @@ public class CardDealer : MonoBehaviour
         deck.Suffle();
         deck.SetBias(bias);
 
-        hand.Clear();
-        bankHand.Clear();
+        ResetHand();
     }
 
     public void DrawBankCard()
@@ -162,6 +160,9 @@ public class CardDealer : MonoBehaviour
 
     public void ResetHand()
     {
+        hand.Clear();
+        bankHand.Clear();
+
         foreach (Transform t in cardsInHand)
         {
             Destroy(t.gameObject);

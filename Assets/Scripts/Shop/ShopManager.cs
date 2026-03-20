@@ -5,12 +5,14 @@ public class ShopManager : MonoBehaviour
 {
     [SerializeField] List<shopObject> objects = new List<shopObject>();
     [SerializeField] List<Transform> objectsPosition = new List<Transform>();
-    [SerializeField] int objectsInShop = 3;
-    private List<shopObject> currentList = new List<shopObject>();
     [SerializeField] Transform parent;
-    // Start is called before the first frame update
+
+    private int objectsInShop;
+    private List<shopObject> currentList = new List<shopObject>();
+
     public void InitShop()
     {
+        objectsInShop = objects.Count;
         currentList = new List<shopObject>(objects);
     }
 

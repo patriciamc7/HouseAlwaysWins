@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum objectType
 {
@@ -13,5 +12,14 @@ public enum objectType
 public class shopObject : MonoBehaviour
 {
     public objectType objectType;
+    public int price;
 
+    private void Start()
+    {
+        GetComponent<Button>().onClick.AddListener(OnClick);
+    }
+    void OnClick()
+    {
+        FindObjectOfType<GameManager>().OnShopItemClick(this.gameObject);
+    }
 }
