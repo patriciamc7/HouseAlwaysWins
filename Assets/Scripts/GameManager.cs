@@ -267,12 +267,14 @@ public class GameManager : MonoBehaviour
 
     public void Stand()
     {
+        gameFlow.OnStand();
         DayResult result = ResolveStand();
         EndRound(result);
     }
 
     DayResult ResolveStand()
     {
+        //verdadero conteo
         float total = dealer.hand.GetTotal();
         float totalBank = dealer.bankHand.GetTotal();
 
@@ -337,7 +339,7 @@ public class GameManager : MonoBehaviour
 
     void StartChanceGame()
     {
-        int r = Random.Range(0, 3); //TODO
+        int r = 2; // Random.Range(0, 3); //TODO
 
         switch (r)
         {

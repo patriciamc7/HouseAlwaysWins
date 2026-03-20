@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class CardMoveAnimation : MonoBehaviour
@@ -106,5 +107,26 @@ public class CardMoveAnimation : MonoBehaviour
     float EaseOutCubic(float t)
     {
         return 1f - Mathf.Pow(1f - t, 3f);
+    }
+
+    public IEnumerator RaiseCards(Vector3 targetPos)
+    {
+        float duration = 0.3f;
+        float t = 0f;
+        Vector3 startPos = transform.localPosition;
+
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+
+            float k = Mathf.Clamp01(t / duration);
+            float eased = EaseOutCubic(k);
+
+            transform.localPosition = Vector3.Lerp(startPos, targetPos, eased);
+
+            yield return null;
+        }
+
+        transform.localPosition = targetPos;
     }
 }

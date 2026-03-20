@@ -20,7 +20,7 @@ public enum Suit
 public class SpanishDeck
 {
     const int totalCards = 10;
-    private List<SpanishCard> cards = new List<SpanishCard>();
+    public List<SpanishCard> cards = new List<SpanishCard>();
 
     DeckBias currentBias = DeckBias.None;
 
@@ -116,5 +116,15 @@ public class SpanishDeck
             return Random.Range(0, cards.Count);
 
         return weightedIndexes[Random.Range(0, weightedIndexes.Count)];
+    }
+
+    public float GetTotal()
+    {
+        float total = 0;
+        for (int i = 0;i < cards.Count;i++)
+        {
+            total += cards[i].value;
+        }
+        return total;
     }
 }

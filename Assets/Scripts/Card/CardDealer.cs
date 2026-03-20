@@ -179,4 +179,51 @@ public class CardDealer : MonoBehaviour
         currentBankSlot = 0;
         currentSlot = 0;
     }
+
+    public bool ShouldBankDraw()
+    {
+        float bankScore = bankHand.GetTotal();
+
+        if (bankScore >= 7f)
+            return false;
+        else if (bankScore >= 6f)
+        {
+            if (hand.GetTotal() > bankScore)
+                return true;
+
+            return false;
+        }
+        else if (bankScore >= 5f)
+        {
+            float bustProb = CalculateBustProbability(bankScore);
+            if (bustProb < 0.4f)
+                return true;
+            return false;
+        }
+        
+        return true;
+    }
+
+    float CalculateBustProbability(float currentScore)
+    {
+        int bustCount = 0;
+
+        foreach (SpanishCard card in deck.cards)
+        {
+            if (currentScore + card.value > 7.5f)
+                bustCount++;
+        }
+
+        return (float)bustCount / deck.GetTotal();
+    }
+
+    public void RaisePlayerCards()
+    {
+        for (int i = 0; i < cardsInHand.Count; i++)
+        {
+            Vector3 startPositions = cardsInHand[i].localPosition;
+            Vector3 targetPositions = startPositions + new Vector3(0, 0, 0.5f);
+            StartCoroutine(cardsInHand[i].GetComponent<CardMoveAnimation>().RaiseCards(targetPositions));
+        }
+    }
 }
