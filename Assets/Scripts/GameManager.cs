@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Collections;
+using System;
 
 public enum DayResult
 {
@@ -30,13 +32,14 @@ public class GameManager : MonoBehaviour
 
     #region UI
     [SerializeField] Text handText;
+    [SerializeField] Text bankHandText;
     [SerializeField] Text totalText;
-    [SerializeField] Text resultText;
     [SerializeField] Text dayText;
     [SerializeField] Text coinsText;
     [SerializeField] Text currentBiasText;
 
     [SerializeField] GameObject cardButtons;
+    [SerializeField] ResultUI gameResult;
     #endregion
 
     int coins = 5;
@@ -109,7 +112,6 @@ public class GameManager : MonoBehaviour
         dealer.StartRun(currentPlayerBias);
         lastDayResult = DayResult.None;
 
-        resultText.text = "";
         BlockButtons(true);
         StartEvent();
     }
@@ -154,6 +156,22 @@ public class GameManager : MonoBehaviour
                 //TODO GO TO MENU
                 break;
         }
+
+        SaveData data = new SaveData();
+        data.coins = coins;
+        data.currentDay = currentDay;
+        data.currentEvent = currentEventIndex;
+
+        SaveManager.Save(data);
+    }
+
+    void LoadGame()
+    {
+        SaveData data = SaveManager.Load();
+
+        coins = data.coins;
+        currentDay = data.currentDay;
+        currentEventIndex = data.currentEvent;
     }
 
     public void NextEvent()
@@ -205,7 +223,7 @@ public class GameManager : MonoBehaviour
 
         if (stressSystem.IsCollapsed())
         {
-            resultText.text = "Mental collapse";
+            //resultText.text = "Mental collapse";
             return;
         }
 
@@ -218,11 +236,16 @@ public class GameManager : MonoBehaviour
     void RefreshUI()
     {
         StringBuilder sb = new StringBuilder();
+        StringBuilder bsb = new StringBuilder();
 
         foreach (var c in dealer.hand.cards)
             sb.AppendLine(c.ToString());
-
         handText.text = sb.ToString();
+
+        foreach (var c in dealer.bankHand.cards)
+            bsb.AppendLine(c.ToString());
+
+        bankHandText.text = bsb.ToString();
         totalText.text = "Total: " + dealer.hand.GetTotal();
         dayText.text = currentDay + 1 + " / " + GameFlowConfig.days.Count;
         coinsText.text = "Coins: " + coins;
@@ -241,19 +264,12 @@ public class GameManager : MonoBehaviour
         if (total == winPoints)
         {
             BlockButtons(false);
-            resultText.text = "WIN";
-            EndRound(DayResult.ExactWin);
+            StartCoroutine(ShowResult(DayResult.ExactWin));
         }
         else if (total > winPoints)
         {
             BlockButtons(false);
-            resultText.text = "Lose with " + total + " points";
-            EndRound(DayResult.Bust);
-            //TODO GAMEOVER
-        }
-        else
-        {
-            resultText.text = "";
+            StartCoroutine(ShowResult(DayResult.Bust));
         }
     }
 
@@ -268,30 +284,26 @@ public class GameManager : MonoBehaviour
     public void Stand()
     {
         gameFlow.OnStand();
-        DayResult result = ResolveStand();
-        EndRound(result);
+        ResolveStand();
     }
 
-    DayResult ResolveStand()
+    void ResolveStand()
     {
-        //verdadero conteo
         float total = dealer.hand.GetTotal();
         float totalBank = dealer.bankHand.GetTotal();
 
-        if (total <= totalBank)
+        if (total <= totalBank && totalBank <= 7.5f)
         {
-            resultText.text = "Lose with " + total;
             coins = 0;
-            return DayResult.Bust;
+            StartCoroutine(ShowResult(DayResult.Bust));
         }
         else
         {
-            resultText.text = "Win with " + total;
-            return DayResult.Stand;
+            StartCoroutine(ShowResult(DayResult.Stand));
         }
     }
 
-    void EndRound(DayResult result)
+    public void EndRound(DayResult result)
     {
         lastDayResult = result;
         waitingNextDay = result == DayResult.ExactWin || result == DayResult.Stand;
@@ -308,7 +320,6 @@ public class GameManager : MonoBehaviour
 
         if (stressSystem.IsCollapsed())
         {
-            resultText.text = "Mental collapse";
             return;
         }
 
@@ -330,7 +341,6 @@ public class GameManager : MonoBehaviour
 
         if (stressSystem.IsCollapsed())
         {
-            resultText.text = "Mental collapse";
             return;
         }
 
@@ -458,7 +468,7 @@ public class GameManager : MonoBehaviour
     {
         if (lastDayResult == DayResult.Bust)
         {
-            int r = Random.Range(0, 3); // TODO PONER EL QUE MAS LE CONVENGA A LA CASA
+            int r = UnityEngine.Random.Range(0, 3); // TODO PONER EL QUE MAS LE CONVENGA A LA CASA
 
             switch (r)
             {
@@ -520,6 +530,17 @@ public class GameManager : MonoBehaviour
         }
     }
     #endregion
+
+    IEnumerator ShowResult(DayResult playerWins)
+    {
+        Time.timeScale = 0.5f;
+        yield return new WaitForSecondsRealtime(0.5f);
+        Time.timeScale = 1f;
+        if (playerWins == DayResult.ExactWin || playerWins == DayResult.Stand)
+            gameResult.ShowWin(() => EndRound(playerWins));
+        else
+            gameResult.ShowLose(() => EndRound(playerWins));
+    }
 }
 public static class EnumExtensions
 {
