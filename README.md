@@ -1,5 +1,5 @@
-# Pomodoro Coffee
-- Project made with react, to run it -> npm run dev
+# House Always Wins
+- Card game with spanish deck
 <table>
   <tr>
     <td><img src="/readme/calçot.png" width="2048" height="2048"></td>
