@@ -18,7 +18,7 @@ MonoBehaviour:
     m_Value: 1
   threshold:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0.9
   intensity:
     m_OverrideState: 1
     m_Value: 1
@@ -100,6 +100,28 @@ MonoBehaviour:
   rounded:
     m_OverrideState: 0
     m_Value: 0
+--- !u!114 &-4152210948070823489
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: ScanLinesVolumeComponent
+  m_EditorClassIdentifier: Assembly-CSharp::ScanLinesVolumeComponent
+  active: 1
+  enabled:
+    m_OverrideState: 1
+    m_Value: 1
+  intensity:
+    m_OverrideState: 1
+    m_Value: 0.9
+  lineCount:
+    m_OverrideState: 1
+    m_Value: 150
 --- !u!114 &-2078049450646336285
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -115,7 +137,7 @@ MonoBehaviour:
   active: 1
   intensity:
     m_OverrideState: 1
-    m_Value: 0.084
+    m_Value: 0.106
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -134,6 +156,7 @@ MonoBehaviour:
   - {fileID: -7011558710299706105}
   - {fileID: -7632541926008936219}
   - {fileID: -2078049450646336285}
+  - {fileID: -4152210948070823489}
 --- !u!114 &849379129802519247
 MonoBehaviour:
   m_ObjectHideFlags: 3
