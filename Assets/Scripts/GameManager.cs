@@ -117,6 +117,8 @@ public class GameManager : MonoBehaviour
 
         BlockButtons(true);
         StartEvent();
+        RefreshUI();
+
     }
 
     private void ResetHand()
@@ -190,6 +192,7 @@ public class GameManager : MonoBehaviour
 
     public void NextEvent()
     {
+        RefreshUI();
         currentEventIndex++;
 
         if (currentEventIndex >= GameFlowConfig.days[currentDay].Count)
@@ -262,7 +265,7 @@ public class GameManager : MonoBehaviour
         bankHandText.text = bsb.ToString();
         totalText.text = "Total: " + dealer.hand.GetTotal();
         dayText.text = currentDay + 1 + " / " + GameFlowConfig.days.Count;
-        coinsText.text = "Coins: " + coins;
+        coinsText.text = coins.ToString();
         currentBiasText.text = "Current bias: " + currentPlayerBias.ToReadable();
 
         RefreshStressUI();
