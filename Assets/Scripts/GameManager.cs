@@ -16,6 +16,7 @@ public enum DayResult
 public enum GameEventType
 {
     ChanceGame,
+    Transition,
     SevenAndHalf, 
     DeckModifier,
     Shop,
@@ -40,6 +41,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] GameObject cardButtons;
     [SerializeField] ResultUI gameResult;
+
+    [SerializeField] IrisTransition iris;
     #endregion
 
     int coins = 5;
@@ -120,6 +123,13 @@ public class GameManager : MonoBehaviour
     {
         dealer.ResetHand();
     }
+
+    private void OnTransitionEnded()
+    {
+        NextEvent();
+        iris.gameObject.SetActive(false);
+    }
+
     public void StartEvent()
     {
         GameEventType currentEvent =
@@ -132,6 +142,10 @@ public class GameManager : MonoBehaviour
             case GameEventType.ChanceGame:
                 cardButtons.SetActive(false);
                 StartChanceGame();
+                break;
+
+            case GameEventType.Transition:
+                iris.GoToScene(OnTransitionEnded);
                 break;
 
             case GameEventType.SevenAndHalf:
