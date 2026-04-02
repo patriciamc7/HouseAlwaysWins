@@ -32,7 +32,6 @@ public class GameManager : MonoBehaviour
     const float winPoints = 7.5f;
 
     #region UI
-    [SerializeField] Text handText;
     [SerializeField] Text bankHandText;
     [SerializeField] Text totalText;
     [SerializeField] Text dayText;
@@ -257,7 +256,6 @@ public class GameManager : MonoBehaviour
 
         foreach (var c in dealer.hand.cards)
             sb.AppendLine(c.ToString());
-        handText.text = sb.ToString();
 
         foreach (var c in dealer.bankHand.cards)
             bsb.AppendLine(c.ToString());
