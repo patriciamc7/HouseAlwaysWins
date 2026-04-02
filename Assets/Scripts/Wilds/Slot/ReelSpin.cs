@@ -35,15 +35,10 @@ public class reelSpin : MonoBehaviour
         reelIcon.Add(new reelSlot(216,IconReels.star));
         reelIcon.Add(new reelSlot(288,IconReels.bar));
     }
-    private void Update()
+
+    public void Spin(System.Action OnComplete)
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Spin();
-        }
-    }
-    void Spin()
-    {
+        int completed = 0;
         int index = Random.Range(0, reelIcon.Count + 1);
         bool isWin = index == reelIcon.Count ? false : true;
         float finalAngle = GetAngle(isWin, index);
@@ -53,7 +48,12 @@ public class reelSpin : MonoBehaviour
             if (!isWin)
                 finalAngle = GetAngle(isWin, index);
 
-            StartCoroutine(reelList[i].SpinReel(finalAngle));
+            StartCoroutine(reelList[i].SpinReel(finalAngle, () =>
+            {
+                completed++;
+                if (completed >= reelList.Count)
+                    OnComplete?.Invoke();
+            }));
         }
     }
 

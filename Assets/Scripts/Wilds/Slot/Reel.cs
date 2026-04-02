@@ -6,7 +6,7 @@ public class Reel : MonoBehaviour
 {
     [SerializeField] float spinTime = 3f;
     [SerializeField] float reelExtraTurns = 4f;
-    public IEnumerator SpinReel(float targetAngle)
+    public IEnumerator SpinReel(float targetAngle, System.Action OnComplete)
     {
         float reelStartAngle = this.transform.localEulerAngles.z;
 
@@ -31,6 +31,7 @@ public class Reel : MonoBehaviour
         }
 
         this.transform.localRotation = Quaternion.Euler(0, 0, finalWheelAngle);
+        OnComplete?.Invoke();
     }
     float EaseOutCubic(float t)
     {

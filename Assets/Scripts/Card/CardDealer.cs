@@ -69,7 +69,7 @@ public class CardDealer : MonoBehaviour
         });
     }
 
-    public void DrawCard()
+    public void DrawCard(System.Action OnComplete = null)
     {
         var cardValue = deck.Draw();
         if (cardValue != null)
@@ -89,7 +89,7 @@ public class CardDealer : MonoBehaviour
         moveAnimation.MoveToPosition(targetPos, card.transform.rotation, handRoot, () =>
         {
             Quaternion rotation = Quaternion.Euler(0f, 0f, 180f) * card.transform.rotation;
-            moveAnimation.FlipTo(rotation, () => { RelayoutHand(); }, 0.25f, 1f);
+            moveAnimation.FlipTo(rotation, () => { RelayoutHand(); OnComplete?.Invoke(); }, 0.25f, 1f);
         });
     }
 

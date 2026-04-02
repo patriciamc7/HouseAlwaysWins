@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum CoinSide
 {
-    Heads,
+    Head,
     Tails
 }
 
@@ -25,7 +25,7 @@ public class CoinWildController : MonoBehaviour
 
     IEnumerator FlipRoutine(CoinSide playerChoice, Action<bool> onFinished)
     {
-        CoinSide result = UnityEngine.Random.value < 0.5f ? CoinSide.Heads : CoinSide.Tails;
+        CoinSide result = UnityEngine.Random.value < 0.5f ? CoinSide.Head : CoinSide.Tails;
         bool win = result == playerChoice;
 
         float t = 0f;
@@ -53,7 +53,7 @@ public class CoinWildController : MonoBehaviour
             yield return null;
         }
 
-        if (result == CoinSide.Heads)
+        if (result == CoinSide.Head)
             currentCoin.transform.rotation = startRot;// cara
         else
             currentCoin.transform.rotation = Quaternion.Euler(90, 0, 0); // cruz

@@ -115,7 +115,6 @@ public class GameManager : MonoBehaviour
         dealer.StartRun(currentPlayerBias);
         lastDayResult = DayResult.None;
 
-        BlockButtons(true);
         StartEvent();
         RefreshUI();
 
@@ -147,6 +146,7 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameEventType.Transition:
+                BlockButtons(false);
                 iris.GoToScene(OnTransitionEnded);
                 break;
 
@@ -211,9 +211,8 @@ public class GameManager : MonoBehaviour
 
     private void StartSevenAndHalf()
     {
-        BlockButtons(true);
         cardButtons.SetActive(true);
-        gameFlow.StartTurn(dealer);
+        gameFlow.StartTurn(dealer, () => BlockButtons(true));
         RefreshUI();
     }
     public void DrawBank()
@@ -233,7 +232,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void DrawCard()
     {
-        dealer.DrawCard();
+        BlockButtons(false);
+        dealer.DrawCard(() => BlockButtons(true));
 
         CheckResult();
         stressSystem.ProcessCardResult(dealer.hand.cards.Count, dealer.hand.GetTotal());
@@ -300,6 +300,7 @@ public class GameManager : MonoBehaviour
 
     public void Stand()
     {
+        BlockButtons(false);
         gameFlow.OnStand();
         ResolveStand();
     }
@@ -366,21 +367,18 @@ public class GameManager : MonoBehaviour
 
     void StartChanceGame()
     {
-        int r = 2; // Random.Range(0, 3); //TODO
+        int r = UnityEngine.Random.Range(0, 3);
 
         switch (r)
         {
             case 0:
                 useWheelWild();
-                Debug.Log("Ruleta");
                 break;
             case 1:
                 UseSlotWild();
-                Debug.Log("Slot");
                 break;
             case 2:
                 UseCoinWild();
-                Debug.Log("Cara o cruz");
                 break;
         }
     }
@@ -388,14 +386,29 @@ public class GameManager : MonoBehaviour
     #region CoinWild
     public void UseCoinWild()
     {
+        foreach (Button but in coinPanel.GetComponentsInChildren<Button>())
+        {
+            but.interactable = true;
+            but.gameObject.SetActive(true);
+        }
         coinPanel.SetActive(true);
     }
 
     public void SideChoose(string playerChoice)
     {
+        foreach (Button but in coinPanel.GetComponentsInChildren<Button>())
+        {
+            if (but.name == playerChoice)
+                but.interactable = false;
+            else
+                but.gameObject.SetActive(false);
+        }
+
         CoinSide coinSide;
         if (System.Enum.TryParse<CoinSide>(playerChoice, out coinSide))
+        {
             coinWild.UseCoinWild(coinSide, OnCoinWildResult);
+        }
     }
 
     void OnCoinWildResult(bool isWin)
@@ -420,16 +433,29 @@ public class GameManager : MonoBehaviour
     #region WheelWild
     public void useWheelWild()
     {
+        foreach (Button but in wheelPanel.GetComponentsInChildren<Button>())
+        {
+            but.interactable = true;
+            but.gameObject.SetActive(true);
+        }
         wheelPanel.SetActive(true);
     }
 
     public void SideColor(string playerChoice)
     {
+        foreach (Button but in wheelPanel.GetComponentsInChildren<Button>())
+        {
+            if (but.name == playerChoice)
+                but.interactable = false;
+            else
+                but.gameObject.SetActive(false);
+        }
+
         Color playerColor;
         if (playerChoice == "Red")
             playerColor = Color.red;
         else
-            playerColor = Color.black;
+            playerColor = Color.green;
 
         wheelGame.PlayWheel(playerColor, OnWheelWildResult);
     }
@@ -453,10 +479,30 @@ public class GameManager : MonoBehaviour
     #region SlotWild
     public void UseSlotWild()
     {
+        foreach (Button but in slotWildPanel.GetComponentsInChildren<Button>())
+        {
+            but.interactable = true;
+            but.gameObject.SetActive(true);
+        }
         slotWildPanel.SetActive(true);
+    }
 
+    public void SpinSlot()
+    {
+        foreach (Button but in slotWildPanel.GetComponentsInChildren<Button>())
+        {
+            but.gameObject.SetActive(false);
+        }
+
+        slotWildPanel.GetComponent<reelSpin>().Spin( () => OnSlotWildResult());
+    }
+
+    void OnSlotWildResult()
+    {
+        slotWildPanel.SetActive(false);
         RefreshUI();
         OnWildPress();
+        NextEvent();
     }
     #endregion
 

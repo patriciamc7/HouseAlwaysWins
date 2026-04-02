@@ -5,24 +5,26 @@ public class GameFlow : MonoBehaviour
 {
     private CardDealer cardDealer;
 
-    public void StartTurn(CardDealer cardDealer)
+    public void StartTurn(CardDealer cardDealer, System.Action onComplete)
     {
         this.cardDealer = cardDealer;
-        StartCoroutine(TurnSequence());
+        StartCoroutine(TurnSequence(onComplete));
     }
 
-    private IEnumerator TurnSequence()
+    private IEnumerator TurnSequence(System.Action onComplete)
     {
         yield return new WaitForSeconds(0.3f);
         yield return StartCoroutine(DrawBankCardsRoutine());
         yield return new WaitForSeconds(0.3f);
         yield return StartCoroutine(DrawPlayerCardsRoutine());
 
-        while(cardDealer.ShouldBankDraw())
+        while (cardDealer.ShouldBankDraw())
         {
             yield return new WaitForSeconds(0.3f);
             yield return StartCoroutine(DrawBankCardsRoutine());
         }
+
+        onComplete?.Invoke();
     }
 
     private IEnumerator DrawBankCardsRoutine()
