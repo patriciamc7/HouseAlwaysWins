@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Custom_URP_WineLiquidWave
+  m_Shader: {fileID: 4800000, guid: ea01fc46e403b2f4ea90fe47286af1e5, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: eeaf102c59e07f2418ad8e5f68654d0b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _IdleSpeed: 0.1
+    - _IdleStrength: 0.012
+    - _MeniscusWidth: 0.06
+    - _ReflectionPower: 0
+    - _ReflectionStrength: 0.35
+    - _WaveAmplitude: 0.06
+    - _WaveBrightness: 4
+    - _WaveDuration: 0.3
+    - _WaveFalloff: 10
+    - _WaveFrequency: 14.7
+    - _WaveSpeed: 1.34
+    - _WaveTime: -999
+    m_Colors:
+    - _ClickPosLocal: {r: 0.0026595974, g: 0.0020327365, b: 0.009423082, a: 0}
+    - _MeniscusColor: {r: 0.9, g: 0.6, b: 0.65, a: 1}
+    - _ReflectionColor: {r: 0.95, g: 0.7, b: 0.75, a: 1}
+    - _WineColorDeep: {r: 1, g: 1, b: 1, a: 0}
+    - _WineColorLight: {r: 1, g: 1, b: 1, a: 0}
+    - _WineColorMid: {r: 1, g: 1, b: 1, a: 0}
+  m_BuildTextureStacks: []

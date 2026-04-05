@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections;
 using System;
+using Unity.VisualScripting;
 
 public enum DayResult
 {
@@ -32,6 +33,7 @@ public class GameManager : MonoBehaviour
     const float winPoints = 7.5f;
 
     #region UI
+    [SerializeField] GameObject npcPhrases;
     [SerializeField] Text bankHandText;
     [SerializeField] Text totalText;
     [SerializeField] Text dayText;
@@ -140,6 +142,7 @@ public class GameManager : MonoBehaviour
         switch (currentEvent)
         {
             case GameEventType.ChanceGame:
+                npcPhrases.GetComponent<PhrasesManagerNPC>().Hide();
                 cardButtons.SetActive(false);
                 StartChanceGame();
                 break;
@@ -210,6 +213,7 @@ public class GameManager : MonoBehaviour
 
     private void StartSevenAndHalf()
     {
+        npcPhrases.GetComponent<PhrasesManagerNPC>().Show();
         cardButtons.SetActive(true);
         gameFlow.StartTurn(dealer, () => BlockButtons(true));
         RefreshUI();
@@ -468,8 +472,8 @@ public class GameManager : MonoBehaviour
         RefreshUI();
         OnWildPress();
 
-        wheelPanel.SetActive(false);
         NextEvent();
+        wheelPanel.SetActive(false);
     }
 
     #endregion
@@ -546,6 +550,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            npcPhrases.GetComponent<PhrasesManagerNPC>().Hide();
             biasUI.SetActive(true);
             cardButtons.SetActive(false);
         }
@@ -568,6 +573,7 @@ public class GameManager : MonoBehaviour
         shopUI.SetActive(true);
         shopUI.GetComponent<ShopManager>().StartShop();
         cardButtons.SetActive(false);
+        npcPhrases.GetComponent<PhrasesManagerNPC>().Hide();
     }
 
     public void OnShopClosed()
