@@ -59,9 +59,9 @@ Earn currency and spend it on wildcards that change the flow of the game:
 
 <table>
   <tr>
-    <td><img src="/readme/calçot.png" width="2048" height="2048"></td>
-    <td><img src="/readme/HCL7p8TWkAAyI-h.jpg" width="1350" height="799"></td>
-    <td><img src="/readme/cocido.png" width="2048" height="2048"></td>
+    <td><img src="/readme/shop.png" width="2048" height="2048"></td>
+    <td><img src="/readme/slot.png" width="1350" height="799"></td>
+    <td><img src="/readme/ruleta.png" width="2048" height="2048"></td>
   </tr>
 </table>
 ---
