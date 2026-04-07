@@ -351,7 +351,7 @@ public class GameManager : MonoBehaviour
         if (stressSlider == null || stressSystem == null) return;
 
         stressSlider.maxValue = stressSystem.maxStress;
-        stressSlider.value = stressSystem.currentStress;
+        stressSlider.GetComponent<SliderEasing>().AnimateTo(stressSystem.currentStress);
     }
 
     void OnWildPress()
