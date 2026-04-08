@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Text totalText;
     [SerializeField] Text dayText;
     [SerializeField] Text coinsText;
+    [SerializeField] GameObject coinsGameObject;
     [SerializeField] Text currentBiasText;
 
     [SerializeField] GameObject cardButtons;
@@ -588,15 +589,85 @@ public class GameManager : MonoBehaviour
         if (coins >= shopItem.price)
         {
             coins = coins - shopItem.price;
+            CoinUpdate();
+            RefreshUI();
+            currentObject.GetComponent<CardClickAnimation>().OnCardClick();
             //TODO APPLY EFFECTS
-            Destroy(currentObject);
         }
         else
         {
-            //NO SE PUEDE COMPRAR
+            //NO SE PUEDE COMPRAR SONIDO
         }
     }
+
+    #region CoinAnimation
+    void CoinUpdate()
+    {
+        StartCoroutine(ScaleCoins());
+    }
+
+    IEnumerator ScaleCoins()
+    {
+        Coroutine text = StartCoroutine(ScaleText());
+        Coroutine coins = StartCoroutine(ScaleCoinGO());
+
+        yield return text;
+        yield return coins;
+    }
+
+    IEnumerator ScaleCoinGO()
+    {
+        float t = 0f;
+        Vector3 _originalScale = coinsGameObject.transform.localScale;
+        Vector3 bigScale = _originalScale * 0.5f;
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime / 0.1f;
+            coinsGameObject.transform.localScale = Vector3.Lerp(_originalScale, bigScale, EaseOut(t));
+            yield return null;
+        }
+
+        t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime / 0.1f;
+            coinsGameObject.transform.localScale = Vector3.Lerp(bigScale, _originalScale, EaseIn(t));
+            yield return null;
+        }
+
+        coinsGameObject.transform.localScale = _originalScale;
+    }
+    IEnumerator ScaleText()
+    {
+        float t = 0f;
+        int _originalScale = coinsText.fontSize;
+        float bigScale = _originalScale * 0.5f;
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime / 0.1f;
+            coinsText.fontSize = (int)Mathf.Lerp(_originalScale, bigScale, EaseOut(t));
+            yield return null;
+        }
+
+        t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime / 0.1f;
+            coinsText.fontSize = (int)Mathf.Lerp(bigScale, _originalScale, EaseIn(t));
+            yield return null;
+        }
+
+        coinsText.fontSize = _originalScale;
+    }
+    private float EaseOut(float t) => 1 - Mathf.Pow(1 - t, 3);
+    private float EaseIn(float t) => t * t * t;
     #endregion
+
+    #endregion
+
+
 
     IEnumerator ShowResult(DayResult playerWins)
     {

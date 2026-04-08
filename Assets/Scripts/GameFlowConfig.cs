@@ -5,6 +5,7 @@ public static class GameFlowConfig
     {
         new List<GameEventType>() // Día 1
         {
+            GameEventType.Shop,
             GameEventType.ChanceGame,
             GameEventType.Transition,
             GameEventType.SevenAndHalf,

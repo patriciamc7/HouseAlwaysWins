@@ -16,6 +16,6 @@ public class BloomPulse : MonoBehaviour
     void Update()
     {
         if (bloom == null) return;
-        bloom.intensity.value = 1f + Mathf.PerlinNoise(Time.time * 0.25f, 0f) * 14f;
+        bloom.intensity.value = 1f + Mathf.PerlinNoise(Time.time * 0.25f, 0f) * 5f;
     }
 }

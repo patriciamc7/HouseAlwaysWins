@@ -12,7 +12,7 @@ public class ShopManager : MonoBehaviour
 
     public void InitShop()
     {
-        objectsInShop = objects.Count;
+        objectsInShop = objectsPosition.Count;
         currentList = new List<shopObject>(objects);
     }
 
