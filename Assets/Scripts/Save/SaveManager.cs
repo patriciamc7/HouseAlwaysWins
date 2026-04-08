@@ -7,6 +7,7 @@ public class SaveData
     public int coins;
     public int currentDay;
     public int currentEvent;
+    public CardDealer dealer;
 }
 
 public static class SaveManager

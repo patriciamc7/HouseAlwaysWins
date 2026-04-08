@@ -93,12 +93,19 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject shopUI;
     #endregion
 
-    // Start is called before the first frame update
     void Start()
     {
         stressSystem = new StressSytem();
         shopUI.GetComponent<ShopManager>().InitShop();
-        NewGame();
+
+        if (GameState.loadSavedGame)
+        {
+            LoadGame();
+        }
+        else
+        {
+            NewGame();
+        }
     }
 
     /// <summary>
@@ -172,14 +179,20 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameEventType.EndRun:
-                //TODO GO TO MENU
+                //TODO CELEBRATION AND GO TO MENU
                 break;
         }
 
+        SaveState();
+    }
+
+    public void SaveState()
+    {
         SaveData data = new SaveData();
         data.coins = coins;
         data.currentDay = currentDay;
         data.currentEvent = currentEventIndex;
+        data.dealer = dealer;
 
         SaveManager.Save(data);
     }
@@ -191,6 +204,8 @@ public class GameManager : MonoBehaviour
         coins = data.coins;
         currentDay = data.currentDay;
         currentEventIndex = data.currentEvent;
+        dealer = data.dealer;
+        RefreshUI();
     }
 
     public void NextEvent()

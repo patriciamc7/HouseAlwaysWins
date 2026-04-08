@@ -5,6 +5,7 @@ public class PauseMenu : MonoBehaviour
 {
     public GameObject pauseUI;
     public GameObject pauseButton;
+    public GameObject gameManager;
     private bool isPaused = false;
 
     void Update()
@@ -26,6 +27,7 @@ public class PauseMenu : MonoBehaviour
 
     public void Pause()
     {
+        gameManager.GetComponent<GameManager>().SaveState();
         pauseButton.SetActive(false);
         pauseUI.SetActive(true);
         Time.timeScale = 0f;
