@@ -1,0 +1,21 @@
+{
+    "play": "Jugar",
+    "continue": "Continuar",
+    "resume": "Reanudar",
+    "menu": "Menú",
+    "settings": "Configuración",
+    "language": "Idioma",
+    "exit": "Salir",
+    "back": "Atrás",
+    "contine": "Continuar",
+    "newgame": "Nuevo Juego",
+    "draw": "Robar",
+    "stand": "Plantar-se",
+    "pause": "Pausa",
+    "next": "Saltar",
+    "red": "Rojo",
+    "green": "Verde",
+    "head": "Cara",
+    "tails": "Cruz",
+    "spin": "Girar"
+}

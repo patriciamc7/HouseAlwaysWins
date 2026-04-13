@@ -1,0 +1,21 @@
+{
+    "play": "Jugar",
+    "continue": "Continuar",
+    "resume": "Tornar",
+    "menu": "Menú",
+    "settings": "Configuració",
+    "language": "Idioma",
+    "exit": "Sortir",
+    "back": "Enrere",
+    "contine": "Continuar",
+    "newgame": "Nou Joc",
+    "draw": "Robar",
+    "stand": "Plantar-se",
+    "pause": "Pausa",
+    "next": "Seguent",
+    "red": "Vermell",
+    "green": "Verd",
+    "head": "Cara",
+    "tails": "Creu",
+    "spin": "Girar"
+}

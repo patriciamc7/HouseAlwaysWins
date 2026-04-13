@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerHand
+[System.Serializable]
+public class PlayerHand : MonoBehaviour
 {
     public List<SpanishCard> cards = new List<SpanishCard>();
 

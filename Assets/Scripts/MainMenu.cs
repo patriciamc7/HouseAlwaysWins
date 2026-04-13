@@ -3,10 +3,11 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-    [SerializeField] GameObject canvas2;
+    [SerializeField] GameObject playCanvas;
+    [SerializeField] GameObject languageCanvas;
     public void PlayGame()
     {
-        canvas2.SetActive(true);
+        playCanvas.SetActive(true);
     }
 
     public void QuitGame()
@@ -16,7 +17,7 @@ public class MainMenu : MonoBehaviour
 
     public void GoToMenu()
     {
-        canvas2.SetActive(false);
+        playCanvas.SetActive(false);
     }
 
     public void Play()
@@ -29,5 +30,15 @@ public class MainMenu : MonoBehaviour
     {
         GameState.loadSavedGame = true;
         SceneManager.LoadScene("Game");
+    }
+
+    public void OpenLanguage()
+    {
+        languageCanvas.SetActive(true);
+    }
+
+    public void CloseLanguage()
+    {
+        languageCanvas.SetActive(false);
     }
 }

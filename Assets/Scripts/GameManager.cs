@@ -1,10 +1,11 @@
-using UnityEngine;
-using UnityEngine.UI;
+using System;
+using System.Collections;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Collections;
-using System;
 using Unity.VisualScripting;
+using UnityEditor.Build.Content;
+using UnityEngine;
+using UnityEngine.UI;
 
 public enum DayResult
 {
@@ -25,6 +26,14 @@ public enum GameEventType
     EndRun
 }
 
+public enum WildType: int
+{
+    None = 0,
+    Wheel = 1,
+    Slot = 2,
+    Coin =3,
+}
+
 public class GameManager : MonoBehaviour
 {
     [SerializeField] CardDealer dealer;
@@ -33,13 +42,16 @@ public class GameManager : MonoBehaviour
     const float winPoints = 7.5f;
 
     #region UI
-    [SerializeField] GameObject npcPhrases;
+    //Debug
     [SerializeField] Text bankHandText;
     [SerializeField] Text totalText;
+    [SerializeField] Text currentBiasText;
+
+
+    [SerializeField] GameObject npcPhrases;
     [SerializeField] Text dayText;
     [SerializeField] Text coinsText;
     [SerializeField] GameObject coinsGameObject;
-    [SerializeField] Text currentBiasText;
 
     [SerializeField] GameObject cardButtons;
     [SerializeField] ResultUI gameResult;
@@ -63,6 +75,7 @@ public class GameManager : MonoBehaviour
 
     #region Wilds
     int remainingWilds = 3;
+    WildType currentWild;
 
     #region Dime
     [SerializeField] CoinWildController coinWild;
@@ -115,6 +128,7 @@ public class GameManager : MonoBehaviour
     {
         currentDay = 0;
         currentEventIndex = 0;
+        currentWild = WildType.None;
 
         shopUI.GetComponent<ShopManager>().NewGame();
 
@@ -152,7 +166,7 @@ public class GameManager : MonoBehaviour
             case GameEventType.ChanceGame:
                 npcPhrases.GetComponent<PhrasesManagerNPC>().Hide();
                 cardButtons.SetActive(false);
-                StartChanceGame();
+                StartChanceGame(GameState.loadSavedGame);
                 break;
 
             case GameEventType.Transition:
@@ -161,6 +175,8 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameEventType.SevenAndHalf:
+                if (GameState.loadSavedGame)
+                    break;
                 ResetHand();
                 StartSevenAndHalf();
                 break;
@@ -171,7 +187,7 @@ public class GameManager : MonoBehaviour
 
             case GameEventType.Shop:
                 OpenShop();
-            break;
+                break;
 
             case GameEventType.FinalGame:
                 //StartFinalGame();
@@ -183,6 +199,7 @@ public class GameManager : MonoBehaviour
                 break;
         }
 
+        GameState.loadSavedGame = false;
         SaveState();
     }
 
@@ -191,8 +208,16 @@ public class GameManager : MonoBehaviour
         SaveData data = new SaveData();
         data.coins = coins;
         data.currentDay = currentDay;
+        data.bias = currentPlayerBias;
         data.currentEvent = currentEventIndex;
-        data.dealer = dealer;
+        data.bankHandCards = dealer.bankHand.cards;
+        data.handCards = dealer.hand.cards;
+        data.deck = dealer.deck.cards;
+        data.stressLevel = stressSystem.currentStress;
+        data.wildType = currentWild;
+        data.shopItems = shopUI.GetComponent<ShopManager>().currentList;
+        data.itemsBought = shopUI.GetComponent<ShopManager>().currentBought;
+        data.currentShop = shopUI.GetComponent<ShopManager>().currentShop;
 
         SaveManager.Save(data);
     }
@@ -201,11 +226,26 @@ public class GameManager : MonoBehaviour
     {
         SaveData data = SaveManager.Load();
 
+        currentWild = data.wildType;
+        stressSystem.currentStress = data.stressLevel;
         coins = data.coins;
         currentDay = data.currentDay;
         currentEventIndex = data.currentEvent;
-        dealer = data.dealer;
+        currentPlayerBias = data.bias;
+        dealer.StartRun(currentPlayerBias);
+        dealer.bankHand.cards = data.bankHandCards;
+        dealer.hand.cards = data.handCards;
+        dealer.loadInstance();
+        dealer.deck.cards = data.deck;
+
         RefreshUI();
+        lastDayResult = DayResult.None;
+
+        shopUI.GetComponent<ShopManager>().currentList  = data.shopItems;
+        shopUI.GetComponent<ShopManager>().currentBought = data.itemsBought;
+        shopUI.GetComponent<ShopManager>().currentShop = data.currentShop;
+
+        StartEvent();
     }
 
     public void NextEvent()
@@ -383,19 +423,24 @@ public class GameManager : MonoBehaviour
         RefreshStressUI();
     }
 
-    void StartChanceGame()
+    void StartChanceGame(bool isLoad)
     {
-        int r = UnityEngine.Random.Range(0, 3);
+        int r = UnityEngine.Random.Range(1, 4);
+        if (isLoad) 
+            r = (int)currentWild;
 
         switch (r)
         {
-            case 0:
+            case (int)WildType.Wheel:
+                currentWild = WildType.Wheel;
                 useWheelWild();
                 break;
-            case 1:
+            case (int)WildType.Slot:
+                currentWild = WildType.Slot;
                 UseSlotWild();
                 break;
-            case 2:
+            case (int)WildType.Coin:
+                currentWild = WildType.Coin;
                 UseCoinWild();
                 break;
         }
@@ -442,8 +487,8 @@ public class GameManager : MonoBehaviour
         OnWildPress();
 
         coinWild.DestroyCoin();
-
         coinPanel.SetActive(false);
+        currentWild = WildType.None;
         NextEvent();
     }
     #endregion
@@ -489,6 +534,7 @@ public class GameManager : MonoBehaviour
         OnWildPress();
 
         NextEvent();
+        currentWild = WildType.None;
         wheelPanel.SetActive(false);
     }
 
@@ -517,9 +563,10 @@ public class GameManager : MonoBehaviour
 
     void OnSlotWildResult()
     {
-        slotWildPanel.SetActive(false);
         RefreshUI();
         OnWildPress();
+        currentWild = WildType.None;
+        slotWildPanel.SetActive(false);
         NextEvent();
     }
     #endregion
@@ -587,9 +634,17 @@ public class GameManager : MonoBehaviour
     void OpenShop()
     {
         shopUI.SetActive(true);
-        shopUI.GetComponent<ShopManager>().StartShop();
         cardButtons.SetActive(false);
         npcPhrases.GetComponent<PhrasesManagerNPC>().Hide();
+
+        if (GameState.loadSavedGame)
+        {
+            shopUI.GetComponent<ShopManager>().LoadShop();
+        }
+        else
+        {
+            shopUI.GetComponent<ShopManager>().StartShop();
+        }
     }
 
     public void OnShopClosed()
@@ -607,6 +662,7 @@ public class GameManager : MonoBehaviour
             CoinUpdate();
             RefreshUI();
             currentObject.GetComponent<CardClickAnimation>().OnCardClick();
+            shopUI.GetComponent<ShopManager>().BuyItem(shopItem);
             //TODO APPLY EFFECTS
         }
         else

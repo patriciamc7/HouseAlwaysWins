@@ -1,5 +1,6 @@
-using UnityEngine;
+using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
 
 [System.Serializable]
 public class SaveData
@@ -7,7 +8,16 @@ public class SaveData
     public int coins;
     public int currentDay;
     public int currentEvent;
-    public CardDealer dealer;
+    public float stressLevel;
+    public DeckBias bias;
+    public List<SpanishCard> handCards;
+    public List<SpanishCard> bankHandCards;
+    public List<SpanishCard> deck;
+    public WildType wildType;
+
+    public List<shopObject> shopItems;
+    public List<shopObject> currentShop;
+    public List<shopObject> itemsBought;
 }
 
 public static class SaveManager
@@ -18,14 +28,12 @@ public static class SaveManager
     {
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(path, json);
-        Debug.Log("Guardado en: " + path);
     }
 
     public static SaveData Load()
     {
         if (!File.Exists(path))
         {
-            Debug.Log("No hay save, creando nuevo");
             return new SaveData();
         }
 

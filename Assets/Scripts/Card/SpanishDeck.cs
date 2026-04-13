@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public enum DeckBias
 {
     None,
@@ -9,6 +10,7 @@ public enum DeckBias
     LowerNumbers
 }
 
+[System.Serializable]
 public enum Suit
 {
     Clubs,
@@ -17,6 +19,7 @@ public enum Suit
     Sword
 }
 
+[System.Serializable]
 public class SpanishDeck
 {
     const int totalCards = 10;

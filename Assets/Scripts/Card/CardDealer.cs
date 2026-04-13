@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class CardDealer : MonoBehaviour
 {
     [SerializeField] GameObject ClubsCard;
@@ -21,9 +22,49 @@ public class CardDealer : MonoBehaviour
     private int currentSlot = 0;
     private int currentBankSlot = 0;
 
-    [SerializeField] SpanishDeck deck;
+    public SpanishDeck deck;
     public PlayerHand hand;
     public PlayerHand bankHand;
+
+    public void loadInstance()
+    {
+        deck = new SpanishDeck();
+
+        for (int i = 0; i < hand.cards.Count; i++)
+        {
+            var cardValue = hand.cards[i];
+            if (cardValue == null)
+                return;
+
+            GameObject prefab = GetPrefab(cardValue.suit);
+            Vector3 targetPos = handRoot.position + Vector3.right * distanceBetweenCards * currentSlot + Vector3.up * heightBetweenCards * currentSlot;
+            GameObject card = Instantiate(prefab, targetPos, prefab.transform.rotation * Quaternion.Euler(0f, 180f, 180f));
+            CardFront front = card.GetComponentInChildren<CardFront>();
+            front.SetValue(cardValue.value);
+            currentSlot++;
+            cardsInHand.Add(card.transform);
+        }
+
+        for (int i = 0; i < bankHand.cards.Count; i++)
+        {
+            var cardValue = bankHand.cards[i];
+            if (cardValue == null)
+                return;
+
+            GameObject prefab = GetPrefab(cardValue.suit);
+            Vector3 targetPos = bankHandRoot.position + Vector3.right * distanceBetweenCards * currentBankSlot + Vector3.up * heightBetweenCards * currentBankSlot;
+
+            Quaternion rotation = Quaternion.Euler(0f, 0f, 0f);
+            if (currentBankSlot == 0)
+                rotation = Quaternion.Euler(0f, 0f, 180f);
+
+            GameObject card = Instantiate(prefab, targetPos, prefab.transform.rotation * rotation);
+            CardFront front = card.GetComponentInChildren<CardFront>();
+            front.SetValue(cardValue.value);
+            currentBankSlot++;
+            cardsInBankHand.Add(card.transform);
+        }
+    }
 
     public void StartRun(DeckBias bias)
     {

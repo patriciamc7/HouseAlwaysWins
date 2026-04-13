@@ -45,7 +45,7 @@ Material:
     - _ClickPosLocal: {r: 0.0026595974, g: 0.0020327365, b: 0.009423082, a: 0}
     - _MeniscusColor: {r: 0.9, g: 0.6, b: 0.65, a: 1}
     - _ReflectionColor: {r: 0.95, g: 0.7, b: 0.75, a: 1}
-    - _WineColorDeep: {r: 1, g: 1, b: 1, a: 0}
+    - _WineColorDeep: {r: 0, g: 0, b: 0, a: 0}
     - _WineColorLight: {r: 1, g: 1, b: 1, a: 0}
-    - _WineColorMid: {r: 1, g: 1, b: 1, a: 0}
+    - _WineColorMid: {r: 0.2264151, g: 0.0074759745, b: 0.0074759745, a: 0}
   m_BuildTextureStacks: []

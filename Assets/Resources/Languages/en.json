@@ -1,0 +1,21 @@
+{
+    "play": "Play",
+    "continue": "Continue",
+    "resume": "Resume",
+    "menu": "Menu",
+    "settings": "Settings",
+    "language": "Language",
+    "exit": "Exit",
+    "back": "Back",
+    "contine": "Continue",
+    "newgame": "New Game",
+    "draw": "Draw",
+    "stand": "Stand",
+    "pause": "Pause",
+    "next": "Next",
+    "red": "Red",
+    "green": "Green",
+    "head": "Head",
+    "tails": "Tails",
+    "spin": "Spin"
+}

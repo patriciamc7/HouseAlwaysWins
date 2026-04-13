@@ -18,7 +18,8 @@ public class PhrasesManagerNPC : MonoBehaviour
 
     void Start()
     {
-        TextAsset archivo = Resources.Load<TextAsset>("phrases/Npc");
+        string savedLang = PlayerPrefs.GetString("Language", "en");
+        TextAsset archivo = Resources.Load<TextAsset>("phrases/Npc_"+savedLang);
 
         if (archivo == null)
         {

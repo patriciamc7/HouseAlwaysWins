@@ -1,14 +1,22 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+[Serializable]
 public enum objectType
 {
     olive,
-    ham,
+    oliveOil,
+    calçot,
+    cannelloni,
+    stew,
+    fuet,
+    serranoHam,
     bread,
-    omelette,
+    spanishOmelette,
 }
 
+[Serializable]
 public class shopObject : MonoBehaviour
 {
     public objectType objectType;
